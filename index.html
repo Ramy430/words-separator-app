@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -365,7 +364,7 @@
         
         <div class="app-content">
             <div class="input-section">
-                <textarea id="inputText" placeholder="Enter a sentence to analyze...">The quick brown fox jumps over the lazy dog</textarea>
+                <textarea id="inputText" placeholder="Enter a sentence to analyze...">The quick brown fox jumps over the lazy dog. How amazing!</textarea>
                 <div class="language-selector">
                     <span>Translate to:</span>
                     <select id="languageSelect">
@@ -406,7 +405,7 @@
             
             <div class="total-section">
                 <h3>Word Count</h3>
-                <div id="totalDisplay" class="total-display">Total Unique Words: 0</div>
+                <div id="totalDisplay" class="total-display">Total Words: 0 | Unique Words: 0</div>
                 <div id="uniqueWords" class="unique-words">
                     <!-- Unique words will be displayed here -->
                 </div>
@@ -504,7 +503,25 @@
             let analyzedWords = [];
             let uniqueWordsSet = new Set();
             
-            // Sample translations database
+            // Enhanced parts of speech database
+            const partsOfSpeech = {
+                'the': 'determiner',
+                'a': 'determiner',
+                'an': 'determiner',
+                'quick': 'adjective',
+                'brown': 'adjective',
+                'lazy': 'adjective',
+                'amazing': 'adjective',
+                'fox': 'noun',
+                'dog': 'noun',
+                'jumps': 'verb',
+                'jump': 'verb',
+                'over': 'preposition',
+                'how': 'adverb',
+                'very': 'adverb'
+            };
+            
+            // Enhanced translations database
             const translations = {
                 'the': { en: 'the', ts: 'in', ar: 'ال' },
                 'quick': { en: 'quick', ts: 'maddas', ar: 'سريع' },
@@ -513,19 +530,9 @@
                 'jumps': { en: 'jumps', ts: 'lumuksu', ar: 'يقفز' },
                 'over': { en: 'over', ts: 'hampang', ar: 'فوق' },
                 'lazy': { en: 'lazy', ts: 'malas', ar: 'كسول' },
-                'dog': { en: 'dog', ts: 'iru', ar: 'كلب' }
-            };
-            
-            // Parts of speech database
-            const partsOfSpeech = {
-                'the': 'determiner',
-                'quick': 'adjective',
-                'brown': 'adjective',
-                'fox': 'noun',
-                'jumps': 'verb',
-                'over': 'preposition',
-                'lazy': 'adjective',
-                'dog': 'noun'
+                'dog': { en: 'dog', ts: 'iru', ar: 'كلب' },
+                'how': { en: 'how', ts: 'biyaunu', ar: 'كيف' },
+                'amazing': { en: 'amazing', ts: 'mausab', ar: 'مذهل' }
             };
             
             // Process the sentence
@@ -540,24 +547,17 @@
                 wordsContainer.innerHTML = '';
                 analyzedWords = [];
                 uniqueWordsSet.clear();
-                updateTotalDisplay();
                 
-                // Split into words
-                const words = sentence.split(/\s+/);
+                // Split into words using improved regex
+                const words = sentence.split(/\s+|(?=[.,!?;:])|(?<=[.,!?;:])/).filter(word => word.trim() !== '');
                 const selectedLanguage = languageSelect.value;
                 
                 // Create word boxes
                 words.forEach(word => {
                     const cleanWord = word.replace(/[.,!?;:"]/g, '').toLowerCase();
-                    const pos = partsOfSpeech[cleanWord] || 'other';
+                    if (!cleanWord) return; // Skip empty words
                     
-                    // Skip if we've already processed this word
-                    if (uniqueWordsSet.has(cleanWord)) {
-                        return;
-                    }
-                    
-                    // Add to unique words set
-                    uniqueWordsSet.add(cleanWord);
+                    const pos = partsOfSpeech[cleanWord] || 'unknown';
                     
                     // Get translation if available
                     let translation = '';
@@ -573,6 +573,9 @@
                         pos: pos,
                         hasTranslation: !!translation
                     });
+                    
+                    // Add to unique words set
+                    uniqueWordsSet.add(cleanWord);
                     
                     // Create word box
                     const wordBox = document.createElement('div');
@@ -594,7 +597,7 @@
                     
                     // Update the data model when translation changes
                     translationInput.addEventListener('input', function() {
-                        const index = Array.from(wordsContainer.children).indexOf(wordBox);
+                        const index = analyzedWords.findIndex(item => item.original === word);
                         if (index !== -1) {
                             analyzedWords[index].translation = this.value;
                             analyzedWords[index].hasTranslation = this.value.trim() !== '';
@@ -609,6 +612,7 @@
                 });
                 
                 updateTotalDisplay();
+                showNotification(`Processed ${words.length} words`);
             });
             
             // Reset the app
@@ -619,17 +623,18 @@
                 uniqueWordsSet.clear();
                 updateTotalDisplay();
                 inputText.focus();
+                showNotification('Application reset');
             });
             
             // Calculate and display total
             totalBtn.addEventListener('click', function() {
                 updateTotalDisplay();
-                showNotification('Total unique words calculated!');
+                showNotification('Total words calculated!');
             });
             
             // Update total display
             function updateTotalDisplay() {
-                totalDisplay.textContent = `Total Unique Words: ${uniqueWordsSet.size}`;
+                totalDisplay.textContent = `Total Words: ${analyzedWords.length} | Unique Words: ${uniqueWordsSet.size}`;
                 
                 // Display unique words
                 uniqueWordsContainer.innerHTML = '';
@@ -648,11 +653,11 @@
                     return;
                 }
                 
-                // Filter out words without translations
-                const wordsWithTranslations = analyzedWords.filter(word => word.hasTranslation);
+                // Filter out words without translations if needed
+                const wordsWithTranslations = analyzedWords; // We'll save all words
                 
                 if (wordsWithTranslations.length === 0) {
-                    showNotification('No words with translations to save!');
+                    showNotification('No words to save!', true);
                     return;
                 }
                 
@@ -662,7 +667,8 @@
                     language: languageSelect.options[languageSelect.selectedIndex].text,
                     originalSentence: inputText.value,
                     exportDate: new Date().toISOString(),
-                    totalWords: wordsWithTranslations.length
+                    totalWords: wordsWithTranslations.length,
+                    uniqueWords: Array.from(uniqueWordsSet)
                 };
                 
                 const content = JSON.stringify(exportData, null, 2);
@@ -677,21 +683,14 @@
                     return;
                 }
                 
-                // Filter out words without translations
-                const wordsWithTranslations = analyzedWords.filter(word => word.hasTranslation);
-                
-                if (wordsWithTranslations.length === 0) {
-                    showNotification('No words with translations to copy!');
-                    return;
-                }
-                
                 // Prepare data for export
                 const exportData = {
-                    words: wordsWithTranslations,
+                    words: analyzedWords,
                     language: languageSelect.options[languageSelect.selectedIndex].text,
                     originalSentence: inputText.value,
                     exportDate: new Date().toISOString(),
-                    totalWords: wordsWithTranslations.length
+                    totalWords: analyzedWords.length,
+                    uniqueWords: Array.from(uniqueWordsSet)
                 };
                 
                 const content = JSON.stringify(exportData, null, 2);
@@ -711,24 +710,17 @@
                     return;
                 }
                 
-                // Filter out words without translations
-                const wordsWithTranslations = analyzedWords.filter(word => word.hasTranslation);
-                
-                if (wordsWithTranslations.length === 0) {
-                    showNotification('No words with translations to save!');
-                    return;
-                }
-                
                 try {
                     showNotification('Saving to Firebase...');
                     
                     // Prepare data for saving
                     const saveData = {
-                        words: wordsWithTranslations,
+                        words: analyzedWords,
                         language: languageSelect.options[languageSelect.selectedIndex].text,
                         originalSentence: inputText.value,
                         savedAt: new Date().toISOString(),
-                        totalWords: wordsWithTranslations.length
+                        totalWords: analyzedWords.length,
+                        uniqueWords: Array.from(uniqueWordsSet)
                     };
                     
                     // Save to Firestore
