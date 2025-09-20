@@ -703,6 +703,28 @@
             // Process the example sentence on load
             setTimeout(() => processBtn.click(), 500);
         });
+        <body>
+    <!-- Your existing HTML content stays exactly as it is -->
+
+    <!-- Your existing scripts (keep them) -->
+    <script src="js/jquery.js"></script>
+    <script src="js/other-library.js"></script>
+    
+    <!-- ADD FIREBASE SCRIPTS HERE -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Firebase config
+        const firebaseConfig = { /* your config */ };
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+
+    <!-- Your main app script (keep it last) -->
+    <script src="js/app.js"></script>
+</body>
     </script>
 </body>
 </html>
+
