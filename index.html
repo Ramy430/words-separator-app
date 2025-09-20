@@ -6,316 +6,50 @@
     <title>Words Separator App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .container {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 900px;
-            overflow: hidden;
-        }
-        
-        header {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-        
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-        }
-        
-        .municipality {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
-        .description {
-            font-size: 1rem;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-        
-        .app-content {
-            padding: 25px;
-        }
-        
-        .input-section {
-            margin-bottom: 25px;
-        }
-        
-        textarea {
-            width: 100%;
-            height: 120px;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            resize: none;
-            font-size: 16px;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: #6a11cb;
-        }
-        
-        .buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-        
-        button {
-            padding: 12px 25px;
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .save-btn {
-            background: linear-gradient(to right, #2ecc71, #27ae60);
-        }
-        
-        .firebase-btn {
-            background: linear-gradient(to right, #FFA000, #FF8F00);
-        }
-        
-        .total-btn {
-            background: linear-gradient(to right, #9b59b6, #8e44ad);
-        }
-        
-        .output-section {
-            margin-top: 20px;
-        }
-        
-        .output-title {
-            font-size: 1.3rem;
-            color: #444;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        
-        .words-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        
-        .word-box {
-            width: 140px;
-            padding: 12px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            text-align: center;
-        }
-        
-        .word {
-            font-weight: bold;
-            color: #2575fc;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-        
-        .pos {
-            font-size: 12px;
-            color: #6c757d;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-        
-        .translation-input {
-            width: 100%;
-            padding: 8px;
-            border: 1px dashed #adb5bd;
-            border-radius: 4px;
-            font-size: 14px;
-            text-align: center;
-        }
-        
-        .translation-input:focus {
-            outline: none;
-            border-color: #6a11cb;
-        }
-        
-        .instructions {
-            background-color: #e8f4fc;
-            border-left: 4px solid #3498db;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 15px;
-            background-color: #f8f9fa;
-            color: #6c757d;
-        }
-        
-        .footer-text {
-            margin: 5px 0;
-        }
-        
-        .save-section {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .save-options {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            background: #2ecc71;
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            display: none;
-            z-index: 1000;
-        }
-        
-        .notification.error {
-            background: #e74c3c;
-        }
-        
-        .notification.show {
-            display: block;
-        }
-        
-        .language-selector {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 15px 0;
-            align-items: center;
-        }
-        
-        select {
-            padding: 8px 12px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        
-        .total-display {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #6a11cb;
-            margin: 10px 0;
-        }
-        
-        .unique-words {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: white;
-            border-radius: 8px;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        
-        .unique-word {
-            display: inline-block;
-            background: #e8f4fc;
-            padding: 5px 10px;
-            margin: 4px;
-            border-radius: 20px;
-        }
-
-        /* Firebase buttons */
-        .firebase-options {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        /* Modal for displaying saved translations */
-        .translations-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            max-width: 90%;
-            max-height: 80%;
-            overflow-y: auto;
-        }
-
-        .translation-item {
-            border-bottom: 1px solid #eee;
-            padding: 10px 0;
-            margin-bottom: 10px;
-        }
-
-        .load-btn {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .load-btn:hover {
-            background: #2980b9;
-        }
-        
-        .copyright {
-            font-weight: bold;
-            color: #6a11cb;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px; }
+        .container { background-color:white; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.2); width:100%; max-width:900px; overflow:hidden; }
+        header { background:linear-gradient(to right, #6a11cb, #2575fc); color:white; padding:25px; text-align:center; }
+        h1 { font-size:2.2rem; margin-bottom:10px; }
+        .municipality { font-size:1.1rem; opacity:0.9; }
+        .description { font-size:1rem; opacity:0.8; margin-top:5px; }
+        .app-content { padding:25px; }
+        .input-section { margin-bottom:25px; }
+        textarea { width:100%; height:120px; padding:15px; border:2px solid #ddd; border-radius:8px; resize:none; font-size:16px; }
+        textarea:focus { outline:none; border-color:#6a11cb; }
+        .buttons { display:flex; justify-content:center; gap:15px; margin-top:15px; flex-wrap:wrap; }
+        button { padding:12px 25px; background:linear-gradient(to right,#6a11cb,#2575fc); color:white; border:none; border-radius:50px; cursor:pointer; font-size:16px; font-weight:600; display:flex; align-items:center; gap:8px; transition:all 0.3s ease; }
+        button:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,0.2); }
+        .save-btn { background:linear-gradient(to right,#2ecc71,#27ae60); }
+        .firebase-btn { background:linear-gradient(to right,#FFA000,#FF8F00); }
+        .total-btn { background:linear-gradient(to right,#9b59b6,#8e44ad); }
+        .output-section { margin-top:20px; }
+        .output-title { font-size:1.3rem; color:#444; margin-bottom:15px; text-align:center; }
+        .words-container { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:20px; }
+        .word-box { width:140px; padding:12px; border-radius:8px; background-color:#f8f9fa; box-shadow:0 3px 10px rgba(0,0,0,0.08); text-align:center; }
+        .word { font-weight:bold; color:#2575fc; margin-bottom:8px; font-size:16px; }
+        .pos { font-size:12px; color:#6c757d; margin-bottom:8px; text-transform:uppercase; }
+        .translation-input { width:100%; padding:8px; border:1px dashed #adb5bd; border-radius:4px; font-size:14px; text-align:center; }
+        .translation-input:focus { outline:none; border-color:#6a11cb; }
+        .instructions { background-color:#e8f4fc; border-left:4px solid #3498db; padding:15px; margin:20px 0; border-radius:4px; }
+        footer { text-align:center; padding:15px; background-color:#f8f9fa; color:#6c757d; }
+        .footer-text { margin:5px 0; }
+        .save-section { margin-top:30px; padding:20px; background-color:#f8f9fa; border-radius:10px; text-align:center; }
+        .save-options { display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:15px; }
+        .notification { position:fixed; top:20px; right:20px; padding:15px 20px; background:#2ecc71; color:white; border-radius:8px; box-shadow:0 5px 15px rgba(0,0,0,0.2); display:none; z-index:1000; }
+        .notification.error { background:#e74c3c; }
+        .notification.show { display:block; }
+        .language-selector { display:flex; justify-content:center; gap:10px; margin:15px 0; align-items:center; }
+        select { padding:8px 12px; border-radius:4px; border:1px solid #ddd; }
+        .total-display { font-size:1.5rem; font-weight:bold; color:#6a11cb; margin:10px 0; }
+        .unique-words { margin-top:15px; padding:10px; background-color:white; border-radius:8px; max-height:150px; overflow-y:auto; }
+        .unique-word { display:inline-block; background:#e8f4fc; padding:5px 10px; margin:4px; border-radius:20px; }
+        .firebase-options { display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:20px; }
+        .translations-modal { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:20px; border-radius:10px; box-shadow:0 5px 25px rgba(0,0,0,0.2); z-index:1000; max-width:90%; max-height:80%; overflow-y:auto; }
+        .translation-item { border-bottom:1px solid #eee; padding:10px 0; margin-bottom:10px; }
+        .load-btn { background:#3498db; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; margin-top:10px; }
+        .load-btn:hover { background:#2980b9; }
+        .copyright { font-weight:bold; color:#6a11cb; }
     </style>
 </head>
 <body>
@@ -325,7 +59,6 @@
             <div class="municipality">Omar Municipality, Sulu, Philippines</div>
             <div class="description">Separate sentences into words with parts of speech and translations</div>
         </header>
-        
         <div class="app-content">
             <div class="input-section">
                 <textarea id="inputText" placeholder="Enter a sentence to analyze...">The quick brown fox jumps over the lazy dog</textarea>
@@ -340,75 +73,113 @@
                         <option value="de">German</option>
                         <option value="it">Italian</option>
                         <option value="pt">Portuguese</option>
-                        <option value="custom">Custom (Write your own)</option>
+                        <option value="custom">Custom</option>
                     </select>
                 </div>
                 <div class="buttons">
-                    <button id="processBtn">
-                        <i class="fas fa-cogs"></i> Process Sentence
-                    </button>
-                    <button id="resetBtn">
-                        <i class="fas fa-redo"></i> Reset
-                    </button>
-                    <button id="totalBtn" class="total-btn">
-                        <i class="fas fa-calculator"></i> Total
-                    </button>
+                    <button id="processBtn"><i class="fas fa-cogs"></i> Process Sentence</button>
+                    <button id="resetBtn"><i class="fas fa-redo"></i> Reset</button>
+                    <button id="totalBtn" class="total-btn"><i class="fas fa-calculator"></i> Total</button>
                 </div>
             </div>
-            
             <div class="instructions">
-                <p><strong>How to use:</strong> Enter a sentence and click "Process Sentence". The app will separate words and identify parts of speech. You can write your translations in the input boxes below each word. All translation fields are fully editable.</p>
+                <p><strong>How to use:</strong> Enter a sentence and click "Process Sentence". Editable translations appear under each word.</p>
             </div>
-            
             <div class="output-section">
                 <h2 class="output-title">Word Analysis</h2>
-                <div id="wordsContainer" class="words-container">
-                    <!-- Words will be generated here -->
-                </div>
+                <div id="wordsContainer" class="words-container"></div>
             </div>
-            
             <div class="total-section">
                 <h3>Word Count</h3>
                 <div id="totalDisplay" class="total-display">Total Unique Words: 0</div>
-                <div id="uniqueWords" class="unique-words">
-                    <!-- Unique words will be displayed here -->
-                </div>
+                <div id="uniqueWords" class="unique-words"></div>
             </div>
-            
             <div class="save-section">
-                <h3>Save Your Translations</h3>
-                <p>Click to save:</p>
                 <div class="save-options">
-                    <button id="saveJsonBtn" class="save-btn">
-                        <i class="fas fa-file-export"></i> Export as JSON
-                    </button>
-                    <button id="copyJsonBtn" class="save-btn">
-                        <i class="fas fa-copy"></i> Copy JSON to Clipboard
-                    </button>
-                </div>
-
-                <div class="firebase-options">
-                    <h4>Firebase Storage</h4>
-                    <button id="firebaseSaveBtn" class="firebase-btn">
-                        <i class="fas fa-database"></i> Save to Firebase
-                    </button>
-                    <button id="firebaseLoadBtn" class="firebase-btn">
-                        <i class="fas fa-download"></i> Load from Firebase
-                    </button>
+                    <button id="saveJsonBtn" class="save-btn"><i class="fas fa-download"></i> Save JSON</button>
+                    <button id="copyJsonBtn" class="save-btn"><i class="fas fa-copy"></i> Copy JSON</button>
+                    <button id="firebaseSaveBtn" class="firebase-btn"><i class="fas fa-cloud-upload-alt"></i> Save to Firebase</button>
+                    <button id="firebaseLoadBtn" class="load-btn"><i class="fas fa-cloud-download-alt"></i> Load from Firebase</button>
                 </div>
             </div>
         </div>
-        
+        <footer>
+            <p class="footer-text">Words Separator App &copy; 2025</p>
+            <p class="footer-text copyright">Omar Municipality, Sulu, Philippines</p>
+        </footer>
+    </div>
+    <div class="notification" id="notification"></div>
+
+    <!-- App Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const processBtn = document.getElementById('processBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const totalBtn = document.getElementById('totalBtn');
+        const inputText = document.getElementById('inputText');
+        const wordsContainer = document.getElementById('wordsContainer');
+        const saveJsonBtn = document.getElementById('saveJsonBtn');
+        const copyJsonBtn = document.getElementById('copyJsonBtn');
+        const firebaseSaveBtn = document.getElementById('firebaseSaveBtn');
+        const firebaseLoadBtn = document.getElementById('firebaseLoadBtn');
+        const notification = document.getElementById('notification');
+        const languageSelect = document.getElementById('languageSelect');
+        const totalDisplay = document.getElementById('totalDisplay');
+        const uniqueWordsContainer = document.getElementById('uniqueWords');
+
+        let analyzedWords = [];
+        let uniqueWordsSet = new Set();
+
+        const translations = {
+            'the': { en:'the', ts:'in', ar:'ال' },
+            'quick': { en:'quick', ts:'maddas', ar:'سريع' },
+            'brown': { en:'brown', ts:'kulay kakah', ar:'بني' },
+            'fox': { en:'fox', ts:'urus', ar:'ثعلب' },
+            'jumps': { en:'jumps', ts:'lumuksu', ar:'يقفز' },
+            'over': { en:'over', ts:'hampang', ar:'فوق' },
+            'lazy': { en:'lazy', ts:'malas', ar:'كسول' },
+            'dog': { en:'dog', ts:'iru', ar:'كلب' }
+        };
+
+        const partsOfSpeech = {
+            'the':'determiner','quick':'adjective','brown':'adjective','fox':'noun',
+            'jumps':'verb','over':'preposition','lazy':'adjective','dog':'noun'
+        };
+
+        function updateTotalDisplay() {
+            totalDisplay.textContent = `Total Unique Words: ${uniqueWordsSet.size}`;
+            uniqueWordsContainer.innerHTML = '';
+
+                    <div class="save-section">
+                <h3>Save Translations</h3>
+                <div class="save-options">
+                    <button id="saveJsonBtn" class="save-btn">
+                        <i class="fas fa-download"></i> Save as JSON
+                    </button>
+                    <button id="copyJsonBtn" class="save-btn">
+                        <i class="fas fa-copy"></i> Copy JSON
+                    </button>
+                </div>
+                <div class="firebase-options">
+                    <button id="firebaseSaveBtn" class="firebase-btn">
+                        <i class="fas fa-cloud-upload-alt"></i> Save to Firebase
+                    </button>
+                    <button id="firebaseLoadBtn" class="load-btn">
+                        <i class="fas fa-cloud-download-alt"></i> Load from Firebase
+                    </button>
+                </div>
+            </div>
+        </div> <!-- app-content end -->
+
         <footer>
             <p class="footer-text">Words Separator App &copy; 2025 | Analyze and translate text with ease</p>
             <p class="footer-text copyright">Copyright Omar Municipality, Sulu, Philippines</p>
         </footer>
-    </div>
+    </div> <!-- container end -->
 
-    <div class="notification" id="notification">
-        File downloaded successfully!
-    </div>
+    <div class="notification" id="notification"></div>
 
+    <!-- Main App Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const processBtn = document.getElementById('processBtn');
@@ -424,11 +195,10 @@
             const languageSelect = document.getElementById('languageSelect');
             const totalDisplay = document.getElementById('totalDisplay');
             const uniqueWordsContainer = document.getElementById('uniqueWords');
-            
+
             let analyzedWords = [];
             let uniqueWordsSet = new Set();
-            
-            // Sample translations database
+
             const translations = {
                 'the': { en: 'the', ts: 'in', ar: 'ال' },
                 'quick': { en: 'quick', ts: 'maddas', ar: 'سريع' },
@@ -439,8 +209,7 @@
                 'lazy': { en: 'lazy', ts: 'malas', ar: 'كسول' },
                 'dog': { en: 'dog', ts: 'iru', ar: 'كلب' }
             };
-            
-            // Parts of speech database
+
             const partsOfSpeech = {
                 'the': 'determiner',
                 'quick': 'adjective',
@@ -451,111 +220,10 @@
                 'lazy': 'adjective',
                 'dog': 'noun'
             };
-            
-            // Process the sentence
-            processBtn.addEventListener('click', function() {
-                const sentence = inputText.value.trim();
-                if (!sentence) {
-                    alert('Please enter a sentence');
-                    return;
-                }
-                
-                // Clear previous results
-                wordsContainer.innerHTML = '';
-                analyzedWords = [];
-                uniqueWordsSet.clear();
-                updateTotalDisplay();
-                
-                // Split into words
-                const words = sentence.split(/\s+/);
-                const selectedLanguage = languageSelect.value;
-                
-                // Create word boxes
-                words.forEach(word => {
-                    const cleanWord = word.replace(/[.,!?;:"]/g, '').toLowerCase();
-                    const pos = partsOfSpeech[cleanWord] || 'other';
-                    
-                    // Skip if we've already processed this word
-                    if (uniqueWordsSet.has(cleanWord)) {
-                        return;
-                    }
-                    
-                    // Add to unique words set
-                    uniqueWordsSet.add(cleanWord);
-                    
-                    // Get translation if available
-                    let translation = '';
-                    if (translations[cleanWord] && selectedLanguage !== 'custom') {
-                        translation = translations[cleanWord][selectedLanguage] || '';
-                    }
-                    
-                    // Store word data
-                    analyzedWords.push({
-                        original: word,
-                        clean: cleanWord,
-                        translation: translation,
-                        pos: pos,
-                        hasTranslation: !!translation
-                    });
-                    
-                    // Create word box
-                    const wordBox = document.createElement('div');
-                    wordBox.className = 'word-box';
-                    
-                    const wordEl = document.createElement('div');
-                    wordEl.className = 'word';
-                    wordEl.textContent = word;
-                    
-                    const posEl = document.createElement('div');
-                    posEl.className = 'pos';
-                    posEl.textContent = pos;
-                    
-                    const translationInput = document.createElement('input');
-                    translationInput.type = 'text';
-                    translationInput.className = 'translation-input';
-                    translationInput.placeholder = 'Enter translation...';
-                    translationInput.value = translation;
-                    
-                    // Update the data model when translation changes
-                    translationInput.addEventListener('input', function() {
-                        const index = Array.from(wordsContainer.children).indexOf(wordBox);
-                        if (index !== -1) {
-                            analyzedWords[index].translation = this.value;
-                            analyzedWords[index].hasTranslation = this.value.trim() !== '';
-                        }
-                    });
-                    
-                    wordBox.appendChild(wordEl);
-                    wordBox.appendChild(posEl);
-                    wordBox.appendChild(translationInput);
-                    
-                    wordsContainer.appendChild(wordBox);
-                });
-                
-                updateTotalDisplay();
-            });
-            
-            // Reset the app
-            resetBtn.addEventListener('click', function() {
-                inputText.value = '';
-                wordsContainer.innerHTML = '';
-                analyzedWords = [];
-                uniqueWordsSet.clear();
-                updateTotalDisplay();
-                inputText.focus();
-            });
-            
-            // Calculate and display total
-            totalBtn.addEventListener('click', function() {
-                updateTotalDisplay();
-                showNotification('Total unique words calculated!');
-            });
-            
-            // Update total display
+
+            // Helper functions
             function updateTotalDisplay() {
                 totalDisplay.textContent = `Total Unique Words: ${uniqueWordsSet.size}`;
-                
-                // Display unique words
                 uniqueWordsContainer.innerHTML = '';
                 uniqueWordsSet.forEach(word => {
                     const wordEl = document.createElement('span');
@@ -564,123 +232,15 @@
                     uniqueWordsContainer.appendChild(wordEl);
                 });
             }
-            
-            // Save as JSON
-            saveJsonBtn.addEventListener('click', function() {
-                if (analyzedWords.length === 0) {
-                    alert('Please process a sentence first');
-                    return;
-                }
-                
-                // Filter out words without translations
-                const wordsWithTranslations = analyzedWords.filter(word => word.hasTranslation);
-                
-                if (wordsWithTranslations.length === 0) {
-                    showNotification('No words with translations to save!');
-                    return;
-                }
-                
-                // Prepare data for export
-                const exportData = {
-                    words: wordsWithTranslations,
-                    language: languageSelect.options[languageSelect.selectedIndex].text,
-                    originalSentence: inputText.value,
-                    exportDate: new Date().toISOString(),
-                    totalWords: wordsWithTranslations.length
-                };
-                
-                const content = JSON.stringify(exportData, null, 2);
-                downloadFile(content, 'word-translations.json', 'application/json');
-                showNotification('File downloaded successfully!');
-            });
-            
-            // Copy JSON to clipboard
-            copyJsonBtn.addEventListener('click', function() {
-                if (analyzedWords.length === 0) {
-                    alert('Please process a sentence first');
-                    return;
-                }
-                
-                // Filter out words without translations
-                const wordsWithTranslations = analyzedWords.filter(word => word.hasTranslation);
-                
-                if (wordsWithTranslations.length === 0) {
-                    showNotification('No words with translations to copy!');
-                    return;
-                }
-                
-                // Prepare data for export
-                const exportData = {
-                    words: wordsWithTranslations,
-                    language: languageSelect.options[languageSelect.selectedIndex].text,
-                    originalSentence: inputText.value,
-                    exportDate: new Date().toISOString(),
-                    totalWords: wordsWithTranslations.length
-                };
-                
-                const content = JSON.stringify(exportData, null, 2);
-                
-                // Copy to clipboard
-                navigator.clipboard.writeText(content).then(() => {
-                    showNotification('JSON copied to clipboard!');
-                }).catch(err => {
-                    alert('Failed to copy JSON: ' + err);
-                });
-            });
-            
-            // Save to Firebase
-            firebaseSaveBtn.addEventListener('click', async function() {
-                if (analyzedWords.length === 0) {
-                    alert('Please process a sentence first');
-                    return;
-                }
-                
-                // Filter out words without translations
-                const wordsWithTranslations = analyzedWords.filter(word => word.hasTranslation);
-                
-                if (wordsWithTranslations.length === 0) {
-                    showNotification('No words with translations to save!');
-                    return;
-                }
-                
-                try {
-                    // Check if Firebase is available
-                    if (typeof window.firebaseDb === 'undefined') {
-                        showNotification('Firebase is not loaded yet. Please wait...');
-                        return;
-                    }
-                    
-                    showNotification('Saving to Firebase...');
-                    
-                    // Prepare data for saving
-                    const saveData = {
-                        words: wordsWithTranslations,
-                        language: languageSelect.options[languageSelect.selectedIndex].text,
-                        originalSentence: inputText.value,
-                        savedAt: new Date().toISOString(),
-                        totalWords: wordsWithTranslations.length
-                    };
-                    
-                    // In a real implementation, you would save to Firebase here
-                    // For now, we'll simulate a successful save
-                    setTimeout(() => {
-                        showNotification('Translations saved to Firebase successfully!');
-                        console.log('Firebase save data:', saveData);
-                    }, 1000);
-                    
-                } catch (error) {
-                    console.error("Error saving to Firebase: ", error);
-                    showNotification('Error saving to Firebase: ' + error.message);
-                }
-            });
-            
-            // Load from Firebase
-            firebaseLoadBtn.addEventListener('click', function() {
-                showNotification('Loading from Firebase would be implemented here');
-                // In a real implementation, this would load saved translations from Firebase
-            });
-            
-            // Helper function to download a file
+
+            function showNotification(message, isError = false) {
+                notification.textContent = message;
+                notification.className = isError ? 'notification error show' : 'notification show';
+                setTimeout(() => {
+                    notification.className = 'notification';
+                }, 3000);
+            }
+
             function downloadFile(content, fileName, contentType) {
                 const blob = new Blob([content], { type: contentType });
                 const url = URL.createObjectURL(blob);
@@ -690,47 +250,135 @@
                 a.click();
                 URL.revokeObjectURL(url);
             }
-            
-            // Show notification
-            function showNotification(message, isError = false) {
-                notification.textContent = message;
-                notification.className = isError ? 'notification error show' : 'notification show';
-                setTimeout(() => {
-                    notification.className = 'notification';
-                }, 3000);
-            }
-            
-            // Process the example sentence on load
-            setTimeout(() => processBtn.click(), 500);
+
+            // Event Listeners
+            processBtn.addEventListener('click', function() {
+                const sentence = inputText.value.trim();
+                if (!sentence) return alert('Please enter a sentence');
+
+                wordsContainer.innerHTML = '';
+                analyzedWords = [];
+                uniqueWordsSet.clear();
+
+                const words = sentence.split(/\s+/);
+                const selectedLanguage = languageSelect.value;
+
+                words.forEach(word => {
+                    const cleanWord = word.replace(/[.,!?;:"]/g, '').toLowerCase();
+                    const pos = partsOfSpeech[cleanWord] || 'other';
+                    if (uniqueWordsSet.has(cleanWord)) return;
+                    uniqueWordsSet.add(cleanWord);
+
+                    let translation = '';
+                    if (translations[cleanWord] && selectedLanguage !== 'custom') {
+                        translation = translations[cleanWord][selectedLanguage] || '';
+                    }
+
+                    analyzedWords.push({ original: word, clean: cleanWord, translation, pos, hasTranslation: !!translation });
+
+                    const wordBox = document.createElement('div');
+                    wordBox.className = 'word-box';
+
+                    const wordEl = document.createElement('div');
+                    wordEl.className = 'word';
+                    wordEl.textContent = word;
+
+                    const posEl = document.createElement('div');
+                    posEl.className = 'pos';
+                    posEl.textContent = pos;
+
+                    const translationInput = document.createElement('input');
+                    translationInput.type = 'text';
+                    translationInput.className = 'translation-input';
+                    translationInput.placeholder = 'Enter translation...';
+                    translationInput.value = translation;
+
+                    translationInput.addEventListener('input', function() {
+                        const index = Array.from(wordsContainer.children).indexOf(wordBox);
+                        if (index !== -1) {
+                            analyzedWords[index].translation = this.value;
+                            analyzedWords[index].hasTranslation = this.value.trim() !== '';
+                        }
+                    });
+
+                    wordBox.appendChild(wordEl);
+                    wordBox.appendChild(posEl);
+                    wordBox.appendChild(translationInput);
+                    wordsContainer.appendChild(wordBox);
+                });
+
+                updateTotalDisplay();
+            });
+
+            resetBtn.addEventListener('click', function() {
+                inputText.value = '';
+                wordsContainer.innerHTML = '';
+                analyzedWords = [];
+                uniqueWordsSet.clear();
+                updateTotalDisplay();
+                inputText.focus();
+            });
+
+            totalBtn.addEventListener('click', function() {
+                updateTotalDisplay();
+                showNotification('Total unique words calculated!');
+            });
+
+            saveJsonBtn.addEventListener('click', function() {
+                if (!analyzedWords.length) return alert('Please process a sentence first');
+
+                const wordsWithTranslations = analyzedWords.filter(w => w.hasTranslation);
+                if (!wordsWithTranslations.length) return showNotification('No words with translations to save!');
+
+                const exportData = {
+                    words: wordsWithTranslations,
+                    language: languageSelect.value,
+                    originalSentence: inputText.value,
+                    exportDate: new Date().toISOString(),
+                    totalWords: wordsWithTranslations.length
+                };
+
+                downloadFile(JSON.stringify(exportData, null, 2), 'word-translations.json', 'application/json');
+                showNotification('File downloaded successfully!');
+            });
+
+            copyJsonBtn.addEventListener('click', function() {
+                if (!analyzedWords.length) return alert('Please process a sentence first');
+
+                const wordsWithTranslations = analyzedWords.filter(w => w.hasTranslation);
+                if (!wordsWithTranslations.length) return showNotification('No words with translations to copy!');
+
+                navigator.clipboard.writeText(JSON.stringify({ words: wordsWithTranslations }, null, 2))
+                    .then(() => showNotification('JSON copied to clipboard!'))
+                    .catch(err => alert('Failed to copy JSON: ' + err));
+            });
         });
-        
     </script>
+
+    <!-- Firebase Integration -->
     <script type="module">
-    // Import Firebase SDKs from Google CDN
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-    // Your Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyCgAEuD8F41dH5nUeoVxMot4-rTp4olmr8",
-      authDomain: "tausug-dictionary-online.firebaseapp.com",
-      projectId: "tausug-dictionary-online",
-      storageBucket: "tausug-dictionary-online.firebasestorage.app",
-      messagingSenderId: "919499038754",
-      appId: "1:919499038754:web:051037787db5a6123c2a7b",
-      measurementId: "G-LBKT0624FT"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgAEuD8F41dH5nUeoVxMot4-rTp4olmr8",
+            authDomain: "tausug-dictionary-online.firebaseapp.com",
+            projectId: "tausug-dictionary-online",
+            storageBucket: "tausug-dictionary-online.firebasestorage.app",
+            messagingSenderId: "919499038754",
+            appId: "1:919499038754:web:051037787db5a6123c2a7b",
+            measurementId: "G-LBKT0624FT"
+        };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    console.log("✅ Firebase initialized!");
-  </script>
+        console.log("✅ Firebase initialized!");
+    </script>
+
 </body>
-
 </html>
