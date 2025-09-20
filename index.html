@@ -1021,11 +1021,35 @@
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
 </script>
+    
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyCgAEuD8F41dH5nUeoVxMot4-rTp4olmr8",
+        authDomain: "tausug-dictionary-online.firebaseapp.com",
+        projectId: "tausug-dictionary-online",
+        storageBucket: "tausug-dictionary-online.firebasestorage.app",
+        messagingSenderId: "919499038754",
+        appId: "1:919499038754:web:051037787db5a6123c2a7b",
+        measurementId: "G-LBKT0624FT"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+</script>
 
    
 </body>
 
 </html>
+
 
 
 
