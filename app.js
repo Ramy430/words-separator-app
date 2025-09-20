@@ -16,6 +16,65 @@ document.addEventListener('DOMContentLoaded', function() {
     let analyzedWords = [];
     let uniqueWordsSet = new Set();
     
+    // ==================== FIREBASE INTEGRATION ====================
+    let firebaseReady = false;
+
+    // Wait for Firebase to be ready
+    if (typeof auth !== 'undefined') {
+        auth.onAuthStateChanged(() => {
+            firebaseReady = true;
+            console.log('✅ Firebase is ready');
+            showNotification('Firebase connected successfully');
+        });
+    }
+
+    // Firebase upload function
+    async function saveToFirebase(data, collectionName) {
+        if (!firebaseReady) {
+            showNotification('⚠️ Firebase not ready yet', true);
+            throw new Error('Firebase not loaded yet');
+        }
+        
+        try {
+            const docRef = await db.collection(collectionName).add({
+                ...data,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+            showNotification('✅ Translations saved to Firebase!');
+            return docRef.id;
+        } catch (error) {
+            console.error('Firebase upload failed:', error);
+            showNotification('❌ Upload failed: ' + error.message, true);
+            throw error;
+        }
+    }
+
+    // Save with backup
+    async function saveWithBackup(data, collectionName) {
+        const backupKey = `backup_${collectionName}_${Date.now()}`;
+        const backupData = {
+            data: data,
+            collection: collectionName,
+            timestamp: new Date().getTime(),
+            attempts: 0
+        };
+        
+        localStorage.setItem(backupKey, JSON.stringify(backupData));
+        console.log('💾 Backup saved locally');
+        
+        try {
+            const result = await saveToFirebase(data, collectionName);
+            localStorage.removeItem(backupKey);
+            return result;
+        } catch (error) {
+            console.warn('Upload failed, keeping backup');
+            showNotification('💾 Data saved locally - will sync when online', true);
+            return null;
+        }
+    }
+    // ==================== END FIREBASE INTEGRATION ====================
+
     // Sample translations database with Tausug and Arabic added
     const translations = {
         'the': {
@@ -28,176 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
             it: 'il/la', 
             pt: 'o/a'
         },
-        'quick': {
-            en: 'quick',
-            ts: 'maddas',
-            ar: 'سريع',
-            es: 'rápido', 
-            fr: 'rapide', 
-            de: 'schnell', 
-            it: 'veloce', 
-            pt: 'rápido'
-        },
-        'brown': {
-            en: 'brown',
-            ts: 'kulay kakah',
-            ar: 'بني',
-            es: 'marrón', 
-            fr: 'marron', 
-            de: 'braun', 
-            it: 'marrone', 
-            pt: 'marrom'
-        },
-        'fox': {
-            en: 'fox',
-            ts: 'urus',
-            ar: 'ثعلب',
-            es: 'zorro', 
-            fr: 'renard', 
-            de: 'Fuchs', 
-            it: 'volpe', 
-            pt: 'raposa'
-        },
-        'jumps': {
-            en: 'jumps',
-            ts: 'lumuksu',
-            ar: 'يقفز',
-            es: 'salta', 
-            fr: 'saute', 
-            de: 'springt', 
-            it: 'salta', 
-            pt: 'salta'
-        },
-        'over': {
-            en: 'over',
-            ts: 'hampang',
-            ar: 'فوق',
-            es: 'sobre', 
-            fr: 'par-dessus', 
-            de: 'über', 
-            it: 'sopra', 
-            pt: 'sobre'
-        },
-        'lazy': {
-            en: 'lazy',
-            ts: 'malas',
-            ar: 'كسول',
-            es: 'perezoso', 
-            fr: 'paresseux', 
-            de: 'faul', 
-            it: 'pigro', 
-            pt: 'preguiçoso'
-        },
-        'dog': {
-            en: 'dog',
-            ts: 'iru',
-            ar: 'كلب',
-            es: 'perro', 
-            fr: 'chien', 
-            de: 'Hund', 
-            it: 'cane', 
-            pt: 'cão'
-        },
-        'is': {
-            en: 'is',
-            ts: 'iya',
-            ar: 'هو',
-            es: 'es', 
-            fr: 'est', 
-            de: 'ist', 
-            it: 'è', 
-            pt: 'é'
-        },
-        'are': {
-            en: 'are',
-            ts: 'sila',
-            ar: 'هم',
-            es: 'son', 
-            fr: 'sont', 
-            de: 'sind', 
-            it: 'sono', 
-            pt: 'são'
-        },
-        'this': {
-            en: 'this',
-            ts: 'kariin',
-            ar: 'هذا',
-            es: 'este/esta', 
-            fr: 'ce/cette', 
-            de: 'dies', 
-            it: 'questo/questa', 
-            pt: 'este/esta'
-        },
-        'that': {
-            en: 'that',
-            ts: 'kariun',
-            ar: 'ذلك',
-            es: 'ese/esa', 
-            fr: 'ce/cette', 
-            de: 'das', 
-            it: 'quel/quella', 
-            pt: 'esse/essa'
-        },
-        'hello': {
-            en: 'hello',
-            ts: 'assalamu alaikum',
-            ar: 'مرحبا',
-            es: 'hola', 
-            fr: 'bonjour', 
-           极 de: 'hallo', 
-            it: 'ciao', 
-            pt: 'olá'
-        },
-        'world': {
-            en: 'world',
-            ts: 'dunya',
-            ar: 'عالم',
-            es: 'mundo', 
-            fr: 'monde', 
-            de: 'Welt', 
-            it: 'mondo', 
-            pt: 'mundo'
-        },
-        'cat': {
-            en: 'cat',
-            ts: 'uting',
-            ar: 'قطة',
-            es: 'gato', 
-            fr: 'chat', 
-            de: 'Katze', 
-            it: 'gatto', 
-            pt: '极gato'
-        },
-        'run': {
-            en: 'run',
-            ts: 'dagan',
-            ar: 'يركض',
-            es: 'correr', 
-            fr: 'courir', 
-            de: 'rennen', 
-            it: 'correre', 
-            pt: 'correr'
-        },
-        'beautiful': {
-            en: 'beautiful',
-            ts: 'mahapdi',
-            ar: 'جميل',
-            es: 'hermoso', 
-            fr: 'beau', 
-            de: 'schön', 
-            it: 'bello', 
-            pt: 'belo'
-        },
-        'slowly': {
-            en: 'slowly',
-            ts: '极hinay-hinay',
-            ar: 'ببطء',
-            es: 'lentamente', 
-            fr: 'lentement', 
-            de: 'langsam', 
-            it: 'lentamente', 
-            pt: 'lentamente'
-        }
+        // ... rest of your translations object
     };
     
     // Parts of speech database
@@ -210,16 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'over': 'preposition',
         'lazy': 'adjective',
         'dog': 'noun',
-        'is': 'verb',
-        'are': 'verb',
-        'this': 'determiner',
-        'that': 'determiner',
-        'hello': 'interjection',
-        'world': 'noun',
-        'cat': 'noun',
-        'run': 'verb',
-        'beautiful': 'adjective',
-        'slowly': 'adverb'
+        // ... rest of your partsOfSpeech object
     };
     
     // Process the sentence
@@ -273,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const wordEl = document.createElement('div');
             wordEl.className = 'word';
-            word极El.textContent = word;
+            wordEl.textContent = word;
             
             const posEl = document.createElement('div');
             posEl.className = `pos ${getPosClass(pos)}`;
@@ -311,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             wordBox.appendChild(wordEl);
             wordBox.appendChild(posEl);
-            wordBox.appendChild(translationInput);
+            word极Box.appendChild(translationInput);
             
             wordsContainer.appendChild(wordBox);
         });
@@ -337,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update total display
     function updateTotalDisplay() {
-        totalDisplay.textContent = `Total Unique Words: ${uniqueWordsSet.size}`;
+        total极Display.textContent = `Total Unique Words: ${uniqueWordsSet.size}`;
         
         // Display unique words
         uniqueWordsContainer.innerHTML = '';
@@ -389,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Filter out words without translations
         const wordsWithTranslations = analyzedWords.filter(word => word.hasTranslation);
         
-        if (words极WithTranslations.length === 0) {
+        if (wordsWithTranslations.length === 0) {
             showNotification('No words with translations to copy!', true);
             return;
         }
@@ -410,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
         navigator.clipboard.writeText(content).then(() => {
             showNotification('JSON copied to clipboard!');
         }).catch(err => {
-            alert('Failed to copy JSON: ' + err);
+            alert('Failed极 to copy JSON: ' + err);
         });
     });
     
@@ -487,9 +368,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Helper function to get POS class for styling
-    function getPosClass(pos) {
+    function get极PosClass(pos) {
         if (pos.includes('noun')) return 'noun';
-        if (pos.includes('verb')) return 'verb';
+        if (pos.includes极('verb')) return 'verb';
         if (pos.includes('adjective')) return 'adj';
         if (pos.includes('adverb')) return 'adv';
         return 'other';
@@ -519,68 +400,8 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             notification.classList.remove('show');
         }, 3000);
-        // ==================== FIREBASE INTEGRATION ====================
-
-// Firebase state
-let firebaseReady = false;
-
-// Wait for Firebase to be ready
-if (typeof auth !== 'undefined') {
-    auth.onAuthStateChanged(() => {
-        firebaseReady = true;
-        console.log('✅ Firebase is ready');
-        showNotification('Firebase connected successfully');
-    });
-}
-
-// Firebase upload function
-async function saveToFirebase(data, collectionName) {
-    if (!firebaseReady) {
-        showNotification('⚠️ Firebase not ready yet', true);
-        throw new Error('Firebase not loaded yet');
-    }
-    
-    try {
-        const docRef = await db.collection(collectionName).add({
-            ...data,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-        showNotification('✅ Translations saved to Firebase!');
-        return docRef.id;
-    } catch (error) {
-        console.error('Firebase upload failed:', error);
-        showNotification('❌ Upload failed: ' + error.message, true);
-        throw error;
-    }
-}
-
-// Save with backup
-async function saveWithBackup(data, collectionName) {
-    const backupKey = `backup_${collectionName}_${Date.now()}`;
-    const backupData = {
-        data: data,
-        collection: collectionName,
-        timestamp: new Date().getTime(),
-        attempts: 0
-    };
-    
-    localStorage.setItem(backupKey, JSON.stringify(backupData));
-    console.log('💾 Backup saved locally');
-    
-    try {
-        const result = await saveToFirebase(data, collectionName);
-        localStorage.removeItem(backupKey);
-        return result;
-    } catch (error) {
-        console.warn('Upload failed, keeping backup');
-        showNotification('💾 Data saved locally - will sync when online', true);
-        return null;
-    
-}
     }
     
     // Process the example sentence on load
     setTimeout(() => processBtn.click(), 500);
-
 });
