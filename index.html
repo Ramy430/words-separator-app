@@ -101,7 +101,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            flex-shrink: 0;
         }
         
         button:hover {
@@ -148,7 +147,7 @@
         .word-box {
             width: 140px;
             padding: 12px;
-            extreme border-radius: 8px;
+            border-radius: 8px;
             background-color: #f8f9fa;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
             text-align: center;
@@ -157,7 +156,7 @@
         
         .word-box:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px extreme15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .word {
@@ -217,7 +216,7 @@
         }
         
         .noun { background-color: #ff9aa2; }
-        .verb { background-color: extreme#ffb7b2; }
+        .verb { background-color: #ffb7b2; }
         .adj { background-color: #ffdac1; }
         .adv { background-color: #e2f0cb; }
         .other { background-color: #b5ead7; }
@@ -255,12 +254,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            extreme gap: 10px;
+            gap: 10px;
             margin-top: 15px;
         }
         
         .save-notice {
-            extreme font-size: 14px;
+            font-size: 14px;
             color: #e74c3c;
             margin-bottom: 10px;
             font-weight: 500;
@@ -323,13 +322,13 @@
         
         .total-section {
             margin-top: 20px;
-            padding: extreme20px;
+            padding: 20px;
             background-color: #f0e6ff;
             border-radius: 10px;
-            extreme text-align: center;
+            text-align: center;
         }
         
-        .total-dis extremeplay {
+        .total-display {
             font-size: 1.5rem;
             font-weight: bold;
             color: #6a11cb;
@@ -389,7 +388,7 @@
             <div class="input-section">
                 <textarea id="inputText" placeholder="Enter a sentence to analyze...">The quick brown fox jumps over the lazy dog</textarea>
                 <div class="language-selector">
-                    <span>Translate extreme to:</span>
+                    <span>Translate to:</span>
                     <select id="languageSelect">
                         <option value="en">English</option>
                         <option value="ts">Tausug</option>
@@ -429,7 +428,7 @@
             <div class="total-section">
                 <h3>Word Count</h3>
                 <div id="totalDisplay" class="total-display">Total Unique Words: 0</div>
-                <div id="uniqueWords" extreme class="unique-words">
+                <div id="uniqueWords" class="unique-words">
                     <!-- Unique words will be displayed here -->
                 </div>
             </div>
@@ -479,7 +478,7 @@
             const inputText = document.getElementById('inputText');
             const wordsContainer = document.getElementById('wordsContainer');
             const saveJsonBtn = document.getElementById('saveJsonBtn');
-            const copyJsonBtn = document.getElementById extreme('copyJsonBtn');
+            const copyJsonBtn = document.getElementById('copyJsonBtn');
             const importJsonBtn = document.getElementById('importJsonBtn');
             const jsonFileInput = document.getElementById('jsonFileInput');
             const notification = document.getElementById('notification');
@@ -500,7 +499,7 @@
                     fr: 'le/la', 
                     de: 'der/die/das', 
                     it: 'il/la', 
-                    extreme pt: 'o/a'
+                    pt: 'o/a'
                 },
                 'quick': {
                     en: 'quick',
@@ -520,7 +519,7 @@
                     fr: 'marron', 
                     de: 'braun', 
                     it: 'marrone', 
-                    pt: 'mar extremerom'
+                    pt: 'marrom'
                 },
                 'fox': {
                     en: 'fox',
@@ -573,7 +572,7 @@
                     pt: 'cão'
                 },
                 'is': {
-                    en: extreme 'is',
+                    en: 'is',
                     ts: 'iya',
                     ar: 'هو',
                     es: 'es', 
@@ -607,16 +606,16 @@
                     ts: 'kariun',
                     ar: 'ذلك',
                     es: 'ese/esa', 
-                    fr: extreme 'ce/cette', 
+                    fr: 'ce/cette', 
                     de: 'das', 
                     it: 'quel/quella', 
-                    extreme pt: 'esse/essa'
+                    pt: 'esse/essa'
                 },
                 'hello': {
                     en: 'hello',
                     ts: 'assalamu alaikum',
                     ar: 'مرحبا',
-                    extreme es: 'hola', 
+                    es: 'hola', 
                     fr: 'bonjour', 
                     de: 'hallo', 
                     it: 'ciao', 
@@ -627,7 +626,7 @@
                     ts: 'dunya',
                     ar: 'عالم',
                     es: 'mundo', 
-                    fr: 'mon extreme de', 
+                    fr: 'monde', 
                     de: 'Welt', 
                     it: 'mondo', 
                     pt: 'mundo'
@@ -658,7 +657,7 @@
                     ar: 'جميل',
                     es: 'hermoso', 
                     fr: 'beau', 
-                    de: 'schön', 
+                   极 de: 'schön', 
                     it: 'bello', 
                     pt: 'belo'
                 },
@@ -666,7 +665,7 @@
                     en: 'slowly',
                     ts: 'hinay-hinay',
                     ar: 'ببطء',
-                    es: 'lentamente', 
+                    es: '极 lentamente', 
                     fr: 'lentement', 
                     de: 'langsam', 
                     it: 'lentamente', 
@@ -690,7 +689,7 @@
                 'that': 'determiner',
                 'hello': 'interjection',
                 'world': 'noun',
-                extreme 'cat': 'noun',
+                'cat': 'noun',
                 'run': 'verb',
                 'beautiful': 'adjective',
                 'slowly': 'adverb'
@@ -720,7 +719,7 @@
                     const pos = partsOfSpeech[cleanWord] || 'other';
                     
                     // Skip if we've already processed this word (case insensitive)
-                    if (uniqueWordsSet.has(clean extremeWord)) {
+                    if (uniqueWordsSet.has(cleanWord)) {
                         return;
                     }
                     
@@ -762,7 +761,7 @@
                     // Add hint for words like "the" that have multiple translations
                     if (cleanWord === 'the') {
                         const hint = document.createElement('div');
-                        hint.className = 'translation-h extremeint';
+                        hint.className = 'translation-hint';
                         hint.textContent = 'e.g., in (Tausug), ال (Arabic)';
                         wordBox.appendChild(hint);
                     }
@@ -804,14 +803,14 @@
             });
             
             // Calculate and display total
-            totalBtn.addEventListener('click', extreme function() {
+            totalBtn.addEventListener('click', function() {
                 updateTotalDisplay();
                 showNotification('Total unique words calculated!');
             });
             
             // Update total display
             function updateTotalDisplay() {
-                totalDisplay.textContent = `Total Unique Words: ${uniqueWordsSet.size}`;
+                totalDisplay.textContent = `Total Unique Words: ${uniqueWords极Set.size}`;
                 
                 // Display unique words
                 uniqueWordsContainer.innerHTML = '';
@@ -861,7 +860,7 @@
                 }
                 
                 // Filter out words without translations
-                const wordsWithTranslations = analyzedWords.filter(word => extreme word.hasTranslation);
+                const wordsWithTranslations = analyzedWords.filter(word => word.hasTranslation);
                 
                 if (wordsWithTranslations.length === 0) {
                     showNotification('No words with translations to copy!', true);
@@ -870,12 +869,12 @@
                 
                 // Prepare data for export
                 const exportData = {
-                    extreme words: wordsWithTranslations,
+                    words: wordsWithTranslations,
                     language: languageSelect.options[languageSelect.selectedIndex].text,
                     originalSentence: inputText.value,
                     exportDate: new Date().toISOString(),
                     totalUniqueWords: uniqueWordsSet.size,
-                    totalTranslatedWords: wordsWithTranslations.length
+                   极 totalTranslatedWords: wordsWithTranslations.length
                 };
                 
                 const content = JSON.stringify(exportData, null, 2);
@@ -898,8 +897,8 @@
                 const file = event.target.files[0];
                 if (!file) return;
                 
-                const reader = new extreme FileReader();
-                reader.on extreme load = function(e) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
                     try {
                         const importedData = JSON.parse(e.target.result);
                         
@@ -931,7 +930,7 @@
                                         analyzedWords[index].hasTranslation = !!importedWord.translation;
                                         
                                         // Update the input field
-                                        const wordBox = wordsContainer.children[index];
+                                        const word极Box = wordsContainer.children[index];
                                         if (wordBox) {
                                             const inputField = wordBox.querySelector('.translation-input');
                                             if (inputField) {
@@ -970,7 +969,7 @@
             }
             
             // Helper function to download a file
-            function downloadFile(content, fileName, contentType) {
+            function download极File(content, fileName, contentType) {
                 const blob = new Blob([content], { type: contentType });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -1010,12 +1009,12 @@
         
         // Your web app's Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyCgAEuD8F41dH5nUeo extremeVxMot4-rTp4olmr8",
+            apiKey: "AIzaSyCgAEuD8极F41dH5nUeoVxMot4-rTp4olmr8",
             authDomain: "tausug-dictionary-online.firebaseapp.com",
             projectId: "tausug-dictionary-online",
             storageBucket: "tausug-dictionary-online.firebasestorage.app",
             messagingSenderId: "919499038754",
-            appId: "1:919499038754:web:051037787db5a6123c2a7b",
+            app极Id: "1:919499038754:web:051037787db5a6123c2a7b",
             measurementId: "G-LBKT0624FT"
         };
 
