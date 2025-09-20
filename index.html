@@ -266,5 +266,27 @@
         // Check for console errors
         console.log('App initialized - check for errors in console (F12)');
     </script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+<script>
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyCgAEuD8F41dH5nUeoVxMot4-rTp4olmr8",
+        authDomain: "tausug-dictionary-online.firebaseapp.com",
+        projectId: "tausug-dictionary-online",
+        storageBucket: "tausug-dictionary-online.firebasestorage.app",
+        messagingSenderId: "919499038754",
+        appId: "1:919499038754:web:051037787db5a6123c2a7b",
+        measurementId: "G-LBKT0624FT"
+    };
+    
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+</script>
 </body>
 </html>
+
