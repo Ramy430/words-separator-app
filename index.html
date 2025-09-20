@@ -136,6 +136,28 @@
             console.log('🌐 Online - checking for failed uploads');
             // Add retry logic here if needed
         });
+        // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCgAEuD8F41dH5nUeoVxMot4-rTp4olmr8",
+  authDomain: "tausug-dictionary-online.firebaseapp.com",
+  projectId: "tausug-dictionary-online",
+  storageBucket: "tausug-dictionary-online.firebasestorage.app",
+  messagingSenderId: "919499038754",
+  appId: "1:919499038754:web:051037787db5a6123c2a7b",
+  measurementId: "G-LBKT0624FT"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
     </script>
 </body>
 </html>
+
