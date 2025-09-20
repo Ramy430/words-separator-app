@@ -998,21 +998,32 @@
             // Process the example sentence on load
             setTimeout(() => processBtn.click(), 500);
         });
-    </script>
-    const firebaseConfig = {
-  apiKey: "AIzaSyCgAEuD8F41dH5nUeoVxMot4-rTp4olmr8",
-  authDomain: "tausug-dictionary-online.firebaseapp.com",
-  projectId: "tausug-dictionary-online",
-  storageBucket: "tausug-dictionary-online.firebasestorage.app",
-  messagingSenderId: "919499038754",
-  appId: "1:919499038754:web:051037787db5a6123c2a7b",
-  measurementId: "G-LBKT0624FT"
-};
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+        });
+    </script>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgAEuD8F41dH5nUeoVxMot4-rTp4olmr8",
+            authDomain: "tausug-dictionary-online.firebaseapp.com",
+            projectId: "tausug-dictionary-online",
+            storageBucket: "tausug-dictionary-online.firebasestorage.app",
+            messagingSenderId: "919499038754",
+            appId: "1:919499038754:web:051037787db5a6123c2a7b",
+            measurementId: "G-LBKT0624FT"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+    </script>
 </body>
 
 </html>
+
 
