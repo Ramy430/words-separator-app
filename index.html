@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Words Separator App</title>
+    <title>Tausug Dictionary Online - Word Separator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -267,7 +267,6 @@
             border-radius: 20px;
         }
 
-        /* Firebase buttons */
         .firebase-options {
             display: flex;
             flex-direction: column;
@@ -276,7 +275,6 @@
             margin-top: 20px;
         }
 
-        /* Modal for displaying saved translations */
         .translations-modal {
             position: fixed;
             top: 50%;
@@ -352,17 +350,79 @@
             gap: 10px;
             margin-top: 20px;
         }
+        
+        .firebase-help {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .firebase-help h4 {
+            margin-top: 0;
+            color: #ff9800;
+        }
+        
+        .firebase-help code {
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        .auth-section {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        
+        .auth-btn {
+            padding: 8px 15px;
+            background: linear-gradient(to right, #4caf50, #2e7d32);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .user-info {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+            color: #2e7d32;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Words Separator App</h1>
-            <div class="municipality">Omar Municipality, Sulu, Philippines</div>
+            <h1>Tausug Dictionary Online</h1>
+            <div class="municipality">Word Separator Tool | Omar Municipality, Sulu, Philippines</div>
             <div class="description">Separate sentences into words with parts of speech and translations</div>
         </header>
         
         <div class="app-content">
+            <div class="auth-section">
+                <h4>Authentication Required</h4>
+                <p>You need to sign in to save or load translations from Firebase.</p>
+                <div class="user-info" id="userInfo">Not signed in</div>
+                <div class="auth-buttons">
+                    <button class="auth-btn" id="signInBtn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                    <button class="auth-btn" id="signOutBtn" style="display: none;"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+                </div>
+            </div>
+            
             <div class="input-section">
                 <textarea id="inputText" placeholder="Enter a sentence to analyze...">The quick brown fox jumps over the lazy dog. How amazing!</textarea>
                 <div class="language-selector">
@@ -394,6 +454,25 @@
             
             <div class="instructions">
                 <p><strong>How to use:</strong> Enter a sentence and click "Process Sentence". The app will separate words and identify parts of speech. You can write your translations in the input boxes below each word. All translation fields are fully editable.</p>
+            </div>
+            
+            <div class="firebase-help">
+                <h4>Firebase Security Rules</h4>
+                <p>For proper security, use these rules in your Firestore Database:</p>
+                <code>
+                    rules_version = '2';<br>
+                    service cloud.firestore {<br>
+                    &nbsp;&nbsp;match /databases/{database}/documents {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;match /translations/{document} {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow read: if true;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow write: if request.auth != null;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;match /{document=**} {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow read, write: if false;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;}<br>
+                    }
+                </code>
             </div>
             
             <div class="output-section">
@@ -436,7 +515,7 @@
         </div>
         
         <footer>
-            <p class="footer-text">Words Separator App &copy; 2025 | Analyze and translate text with ease</p>
+            <p class="footer-text">Tausug Dictionary Online &copy; 2025 | Analyze and translate text with ease</p>
             <p class="footer-text copyright">Copyright Omar Municipality, Sulu, Philippines</p>
         </footer>
     </div>
@@ -461,6 +540,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <!-- Firebase Analytics -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics-compat.js"></script>
+    <!-- Firebase Auth -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
     <script>
         // Firebase configuration
@@ -478,6 +559,7 @@
         firebase.initializeApp(firebaseConfig);
         const analytics = firebase.analytics();
         const db = firebase.firestore();
+        const auth = firebase.auth();
         
         console.log("✅ Firebase initialized!");
 
@@ -499,9 +581,13 @@
             const firebaseModal = document.getElementById('firebaseModal');
             const firebaseData = document.getElementById('firebaseData');
             const closeModal = document.getElementById('closeModal');
+            const signInBtn = document.getElementById('signInBtn');
+            const signOutBtn = document.getElementById('signOutBtn');
+            const userInfo = document.getElementById('userInfo');
             
             let analyzedWords = [];
             let uniqueWordsSet = new Set();
+            let currentUser = null;
             
             // Enhanced parts of speech database
             const partsOfSpeech = {
@@ -534,6 +620,53 @@
                 'how': { en: 'how', ts: 'biyaunu', ar: 'كيف' },
                 'amazing': { en: 'amazing', ts: 'mausab', ar: 'مذهل' }
             };
+            
+            // Authentication state observer
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUser = user;
+                    userInfo.textContent = `Signed in as: ${user.email}`;
+                    signInBtn.style.display = 'none';
+                    signOutBtn.style.display = 'block';
+                    showNotification('Signed in successfully!');
+                } else {
+                    currentUser = null;
+                    userInfo.textContent = 'Not signed in';
+                    signInBtn.style.display = 'block';
+                    signOutBtn.style.display = 'none';
+                }
+            });
+            
+            // Sign in handler
+            signInBtn.addEventListener('click', async function() {
+                const email = prompt('Please enter your email:');
+                if (!email) return;
+                
+                const password = prompt('Please enter your password:');
+                if (!password) return;
+                
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                } catch (error) {
+                    if (error.code === 'auth/user-not-found') {
+                        // Create new user if doesn't exist
+                        try {
+                            await auth.createUserWithEmailAndPassword(email, password);
+                            showNotification('New account created!');
+                        } catch (createError) {
+                            showNotification('Error creating account: ' + createError.message, true);
+                        }
+                    } else {
+                        showNotification('Sign in error: ' + error.message, true);
+                    }
+                }
+            });
+            
+            // Sign out handler
+            signOutBtn.addEventListener('click', function() {
+                auth.signOut();
+                showNotification('Signed out successfully');
+            });
             
             // Process the sentence
             processBtn.addEventListener('click', function() {
@@ -705,6 +838,11 @@
             
             // Save to Firebase
             firebaseSaveBtn.addEventListener('click', async function() {
+                if (!currentUser) {
+                    showNotification('Please sign in to save to Firebase', true);
+                    return;
+                }
+                
                 if (analyzedWords.length === 0) {
                     alert('Please process a sentence first');
                     return;
@@ -720,7 +858,9 @@
                         originalSentence: inputText.value,
                         savedAt: new Date().toISOString(),
                         totalWords: analyzedWords.length,
-                        uniqueWords: Array.from(uniqueWordsSet)
+                        uniqueWords: Array.from(uniqueWordsSet),
+                        userId: currentUser.uid,
+                        userEmail: currentUser.email
                     };
                     
                     // Save to Firestore
@@ -731,7 +871,11 @@
                     
                 } catch (error) {
                     console.error("Error saving to Firebase: ", error);
-                    showNotification('Error saving to Firebase: ' + error.message, true);
+                    if (error.code === 'permission-denied') {
+                        showNotification('Firebase permission error. Please update your security rules.', true);
+                    } else {
+                        showNotification('Error saving to Firebase: ' + error.message, true);
+                    }
                 }
             });
             
@@ -741,7 +885,7 @@
                     showNotification('Loading from Firebase...');
                     
                     // Get data from Firestore
-                    const snapshot = await db.collection('translations').orderBy('savedAt', 'desc').get();
+                    const snapshot = await db.collection('translations').orderBy('savedAt', 'desc').limit(10).get();
                     
                     if (snapshot.empty) {
                         showNotification('No saved translations found in Firebase');
@@ -782,7 +926,11 @@
                     
                 } catch (error) {
                     console.error("Error loading from Firebase: ", error);
-                    showNotification('Error loading from Firebase: ' + error.message, true);
+                    if (error.code === 'permission-denied') {
+                        showNotification('Firebase permission error. Please update your security rules.', true);
+                    } else {
+                        showNotification('Error loading from Firebase: ' + error.message, true);
+                    }
                 }
             });
             
