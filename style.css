@@ -1,0 +1,162 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.header {
+    background: linear-gradient(to right, #3498db, #2c3e50);
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.header h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.header p {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.content {
+    padding: 30px;
+}
+
+.search-box {
+    display: flex;
+    margin-bottom: 25px;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+    flex: 1;
+    padding: 15px 20px;
+    border: none;
+    background: #f5f7fa;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-btn {
+    background: #2c3e50;
+    color: white;
+    border: none;
+    padding: 0 25px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.search-btn:hover {
+    background: #3498db;
+}
+
+.divider {
+    height: 1px;
+    background: #e0e6ed;
+    margin: 25px 0;
+}
+
+.word-list {
+    background: #f8fafd;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.word-list h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+}
+
+.word-list h2 i {
+    margin-right: 10px;
+    color: #3498db;
+}
+
+.word-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.word-item:last-child {
+    border-bottom: none;
+}
+
+.word {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.meaning {
+    color: #7f8c8d;
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    background: #f8fafd;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.search-results {
+    margin-top: 20px;
+    padding: 15px;
+    background: #e8f4fc;
+    border-radius: 10px;
+    display: none;
+}
+
+.no-results {
+    color: #e74c3c;
+    text-align: center;
+    padding: 10px;
+    font-style: italic;
+}
+
+@media (max-width: 600px) {
+    .header {
+        padding: 20px 15px;
+    }
+    
+    .header h1 {
+        font-size: 24px;
+    }
+    
+    .content {
+        padding: 20px;
+    }
+    
+    .search-input {
+        padding: 12px 15px;
+    }
+}
