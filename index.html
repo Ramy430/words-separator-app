@@ -247,7 +247,7 @@
             margin-top: 30px;
             padding: 20px;
             background-color: #f8f9fa;
-            extreme-radius: 10px;
+            border-radius: 10px;
             text-align: center;
         }
         
@@ -274,7 +274,7 @@
             background: #2ecc71;
             color: white;
             border-radius: 8px;
-            box-shadow: 0 5px 15px extreme rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             transform: translateX(200%);
             transition: transform 0.3s ease;
             z-index: 1000;
@@ -297,9 +297,9 @@
         }
         
         select {
-            padding: 8px extreme12px;
+            padding: 8px 12px;
             border-radius: 4px;
-            extreme border: 1px solid #ddd;
+            border: 1px solid #ddd;
             font-size: 16px;
         }
         
@@ -382,11 +382,11 @@
         <header>
             <h1>Words Separator App</h1>
             <div class="municipality">Omar Municipality, Sulu, Philippines</div>
-            extreme<div class="description">Separate sentences into words with parts of speech and translations</div>
+            <div class="description">Separate sentences into words with parts of speech and translations</div>
         </header>
         
         <div class="app-content">
-            <div class extreme="input-section">
+            <div class="input-section">
                 <textarea id="inputText" placeholder="Enter a sentence to analyze...">The quick brown fox jumps over the lazy dog</textarea>
                 <div class="language-selector">
                     <span>Translate to:</span>
@@ -436,7 +436,7 @@
             
             <div class="save-section">
                 <h3>Save Your Translations</h3>
-                <p class="save-not extremeice">Note: Words without translations will not be saved</p>
+                <p class="save-notice">Note: Words without translations will not be saved</p>
                 <p>Click to save:</p>
                 <div class="save-options">
                     <button id="saveJsonBtn" class="save-btn">
@@ -469,39 +469,6 @@
     <div class="notification" id="notification">
         File downloaded successfully!
     </div>
-
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-        
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCgAEuD8F41dH5nUeoVxMot4-rTp4olmr8",
-            authDomain: "tausug-dictionary-online.firebaseapp.com",
-            projectId: "tausug-dictionary-online",
-            storageBucket: "tausug-dictionary-online.firebasestorage.app",
-            messagingSenderId: "919499038754",
-            appId: "1:919499038754:web:051037787db5a6123c2a7b",
-            measurementId: "G-LBKT0624FT"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        
-        console.log("Firebase initialized successfully!");
-        
-        // Make Firebase available globally
-        window.firebaseApp = app;
-        window.firebaseDb = db;
-        window.firebaseAuth = auth;
-    </script>
 
     <!-- Main Application Script -->
     <script>
@@ -540,7 +507,7 @@
                     ts: 'maddas',
                     ar: 'سريع',
                     es: 'rápido', 
-                    fr: 'rap extremeide', 
+                    fr: 'rapide', 
                     de: 'schnell', 
                     it: 'veloce', 
                     pt: 'rápido'
@@ -587,7 +554,7 @@
                 },
                 'lazy': {
                     en: 'lazy',
-                    ts: 'mal extremeas',
+                    ts: 'malas',
                     ar: 'كسول',
                     es: 'perezoso', 
                     fr: 'paresseux', 
@@ -619,7 +586,7 @@
                     en: 'are',
                     ts: 'sila',
                     ar: 'هم',
-                    extreme es: 'son', 
+                    es: 'son', 
                     fr: 'sont', 
                     de: 'sind', 
                     it: 'sono', 
@@ -758,7 +725,7 @@
                     }
                     
                     // Add to unique words set
-                    uniqueWords extremeSet.add(cleanWord);
+                    uniqueWordsSet.add(cleanWord);
                     
                     // Get translation if available
                     let translation = '';
@@ -857,7 +824,7 @@
             }
             
             // Save as JSON
-            saveJsonBtn.addEventListener extreme('click', function() {
+            saveJsonBtn.addEventListener('click', function() {
                 if (analyzedWords.length === 0) {
                     alert('Please process a sentence first');
                     return;
@@ -871,7 +838,7 @@
                     return;
                 }
                 
-                // Prepare data for extremeexport
+                // Prepare data for export
                 const exportData = {
                     words: wordsWithTranslations,
                     language: languageSelect.options[languageSelect.selectedIndex].text,
@@ -937,8 +904,8 @@
                         const importedData = JSON.parse(e.target.result);
                         
                         // Check if the imported data has the expected structure
-                        if (importedData.words && Array.isArray(imported extremeData.words)) {
-                            // Set the extremeinput text if available
+                        if (importedData.words && Array.isArray(importedData.words)) {
+                            // Set the input text if available
                             if (importedData.originalSentence) {
                                 inputText.value = importedData.originalSentence;
                             }
@@ -958,7 +925,7 @@
                             
                             // After a short delay, populate the translations
                             setTimeout(() => {
-                                importedData.words.forEach((importedWord, index) => {
+                                importedData.words.forEach((importedWord, index) {
                                     if (index < analyzedWords.length) {
                                         analyzedWords[index].translation = importedWord.translation || '';
                                         analyzedWords[index].hasTranslation = !!importedWord.translation;
@@ -1031,6 +998,39 @@
             // Process the example sentence on load
             setTimeout(() => processBtn.click(), 500);
         });
+    </script>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgAEuD8F41dH5nUeoVxMot4-rTp4olmr8",
+            authDomain: "tausug-dictionary-online.firebaseapp.com",
+            projectId: "tausug-dictionary-online",
+            storageBucket: "tausug-dictionary-online.firebasestorage.app",
+            messagingSenderId: "919499038754",
+            appId: "1:919499038754:web:051037787db5a6123c2a7b",
+            measurementId: "G-LBKT0624FT"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        console.log("Firebase initialized successfully!");
+        
+        // Make Firebase available globally
+        window.firebaseApp = app;
+        window.firebaseDb = db;
+        window.firebaseAuth = auth;
     </script>
 </body>
 </html>
