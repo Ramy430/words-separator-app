@@ -519,8 +519,68 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             notification.classList.remove('show');
         }, 3000);
+        // ==================== FIREBASE INTEGRATION ====================
+
+// Firebase state
+let firebaseReady = false;
+
+// Wait for Firebase to be ready
+if (typeof auth !== 'undefined') {
+    auth.onAuthStateChanged(() => {
+        firebaseReady = true;
+        console.log('✅ Firebase is ready');
+        showNotification('Firebase connected successfully');
+    });
+}
+
+// Firebase upload function
+async function saveToFirebase(data, collectionName) {
+    if (!firebaseReady) {
+        showNotification('⚠️ Firebase not ready yet', true);
+        throw new Error('Firebase not loaded yet');
+    }
+    
+    try {
+        const docRef = await db.collection(collectionName).add({
+            ...data,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+        showNotification('✅ Translations saved to Firebase!');
+        return docRef.id;
+    } catch (error) {
+        console.error('Firebase upload failed:', error);
+        showNotification('❌ Upload failed: ' + error.message, true);
+        throw error;
+    }
+}
+
+// Save with backup
+async function saveWithBackup(data, collectionName) {
+    const backupKey = `backup_${collectionName}_${Date.now()}`;
+    const backupData = {
+        data: data,
+        collection: collectionName,
+        timestamp: new Date().getTime(),
+        attempts: 0
+    };
+    
+    localStorage.setItem(backupKey, JSON.stringify(backupData));
+    console.log('💾 Backup saved locally');
+    
+    try {
+        const result = await saveToFirebase(data, collectionName);
+        localStorage.removeItem(backupKey);
+        return result;
+    } catch (error) {
+        console.warn('Upload failed, keeping backup');
+        showNotification('💾 Data saved locally - will sync when online', true);
+        return null;
+    
+}
     }
     
     // Process the example sentence on load
     setTimeout(() => processBtn.click(), 500);
+
 });
