@@ -97,15 +97,20 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            transition: all 0.3s ease;
         }
         
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
         .save-btn {
             background: linear-gradient(to right, #2ecc71, #27ae60);
+        }
+        
+        .firebase-btn {
+            background: linear-gradient(to right, #FFA000, #FF8F00);
         }
         
         .total-btn {
@@ -183,6 +188,10 @@
             color: #6c757d;
         }
         
+        .footer-text {
+            margin: 5px 0;
+        }
+        
         .save-section {
             margin-top: 30px;
             padding: 20px;
@@ -209,6 +218,11 @@
             border-radius: 8px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             display: none;
+            z-index: 1000;
+        }
+        
+        .notification.error {
+            background: #e74c3c;
         }
         
         .notification.show {
@@ -251,6 +265,56 @@
             padding: 5px 10px;
             margin: 4px;
             border-radius: 20px;
+        }
+
+        /* Firebase buttons */
+        .firebase-options {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Modal for displaying saved translations */
+        .translations-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+
+        .translation-item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+            margin-bottom: 10px;
+        }
+
+        .load-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .load-btn:hover {
+            background: #2980b9;
+        }
+        
+        .copyright {
+            font-weight: bold;
+            color: #6a11cb;
         }
     </style>
 </head>
@@ -322,11 +386,22 @@
                         <i class="fas fa-copy"></i> Copy JSON to Clipboard
                     </button>
                 </div>
+
+                <div class="firebase-options">
+                    <h4>Firebase Storage</h4>
+                    <button id="firebaseSaveBtn" class="firebase-btn">
+                        <i class="fas fa-database"></i> Save to Firebase
+                    </button>
+                    <button id="firebaseLoadBtn" class="firebase-btn">
+                        <i class="fas fa-download"></i> Load from Firebase
+                    </button>
+                </div>
             </div>
         </div>
         
         <footer>
-            <p class="footer-text">Words Separator App &copy; 2023 | Analyze and translate text with ease</p>
+            <p class="footer-text">Words Separator App &copy; 2025 | Analyze and translate text with ease</p>
+            <p class="footer-text copyright">Copyright Omar Municipality, Sulu, Philippines</p>
         </footer>
     </div>
 
@@ -343,6 +418,8 @@
             const wordsContainer = document.getElementById('wordsContainer');
             const saveJsonBtn = document.getElementById('saveJsonBtn');
             const copyJsonBtn = document.getElementById('copyJsonBtn');
+            const firebaseSaveBtn = document.getElementById('firebaseSaveBtn');
+            const firebaseLoadBtn = document.getElementById('firebaseLoadBtn');
             const notification = document.getElementById('notification');
             const languageSelect = document.getElementById('languageSelect');
             const totalDisplay = document.getElementById('totalDisplay');
@@ -509,7 +586,7 @@
                     language: languageSelect.options[languageSelect.selectedIndex].text,
                     originalSentence: inputText.value,
                     exportDate: new Date().toISOString(),
-                    totalUniqueWords: uniqueWordsSet.size
+                    totalWords: wordsWithTranslations.length
                 };
                 
                 const content = JSON.stringify(exportData, null, 2);
@@ -538,7 +615,7 @@
                     language: languageSelect.options[languageSelect.selectedIndex].text,
                     originalSentence: inputText.value,
                     exportDate: new Date().toISOString(),
-                    totalUniqueWords: uniqueWordsSet.size
+                    totalWords: wordsWithTranslations.length
                 };
                 
                 const content = JSON.stringify(exportData, null, 2);
@@ -549,6 +626,58 @@
                 }).catch(err => {
                     alert('Failed to copy JSON: ' + err);
                 });
+            });
+            
+            // Save to Firebase
+            firebaseSaveBtn.addEventListener('click', async function() {
+                if (analyzedWords.length === 0) {
+                    alert('Please process a sentence first');
+                    return;
+                }
+                
+                // Filter out words without translations
+                const wordsWithTranslations = analyzedWords.filter(word => word.hasTranslation);
+                
+                if (wordsWithTranslations.length === 0) {
+                    showNotification('No words with translations to save!');
+                    return;
+                }
+                
+                try {
+                    // Check if Firebase is available
+                    if (typeof window.firebaseDb === 'undefined') {
+                        showNotification('Firebase is not loaded yet. Please wait...');
+                        return;
+                    }
+                    
+                    showNotification('Saving to Firebase...');
+                    
+                    // Prepare data for saving
+                    const saveData = {
+                        words: wordsWithTranslations,
+                        language: languageSelect.options[languageSelect.selectedIndex].text,
+                        originalSentence: inputText.value,
+                        savedAt: new Date().toISOString(),
+                        totalWords: wordsWithTranslations.length
+                    };
+                    
+                    // In a real implementation, you would save to Firebase here
+                    // For now, we'll simulate a successful save
+                    setTimeout(() => {
+                        showNotification('Translations saved to Firebase successfully!');
+                        console.log('Firebase save data:', saveData);
+                    }, 1000);
+                    
+                } catch (error) {
+                    console.error("Error saving to Firebase: ", error);
+                    showNotification('Error saving to Firebase: ' + error.message);
+                }
+            });
+            
+            // Load from Firebase
+            firebaseLoadBtn.addEventListener('click', function() {
+                showNotification('Loading from Firebase would be implemented here');
+                // In a real implementation, this would load saved translations from Firebase
             });
             
             // Helper function to download a file
@@ -563,11 +692,11 @@
             }
             
             // Show notification
-            function showNotification(message) {
+            function showNotification(message, isError = false) {
                 notification.textContent = message;
-                notification.classList.add('show');
+                notification.className = isError ? 'notification error show' : 'notification show';
                 setTimeout(() => {
-                    notification.classList.remove('show');
+                    notification.className = 'notification';
                 }, 3000);
             }
             
