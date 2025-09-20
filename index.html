@@ -1,29 +1,108 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Your App</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Your existing head content -->
+    <title>Tausug Dictionary Firebase Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background: #4CAF50;
+            color: white;
+            display: none;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        .notification.show {
+            display: block;
+        }
+        .notification.error {
+            background: #f44336;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+    </style>
 </head>
 <body>
-    <!-- Your existing HTML content here -->
-    
-    <!-- Notification element (add this if you don't have it) -->
+    <!-- ACTUAL VISIBLE CONTENT -->
+    <div class="container">
+        <h1>🔥 Firebase Test</h1>
+        
+        <div class="input-group">
+            <label>Test Data:</label>
+            <input type="text" id="testInput" value="Testing Firebase Connection" placeholder="Enter test data">
+        </div>
+        
+        <button id="processBtn">💾 Save to Firebase</button>
+        <button onclick="downloadTest()">📥 Test Download</button>
+        
+        <div class="status">
+            <h3>Status: <span id="statusText">Loading...</span></h3>
+            <p>Firebase: <span id="firebaseStatus">Connecting...</span></p>
+        </div>
+    </div>
+
+    <!-- Notification element -->
     <div id="notification" class="notification"></div>
 
-    <!-- Load ALL libraries first -->
-    <script src="js/jquery.js"></script>
-    <script src="js/other-library.js"></script>
-    
-    <!-- Firebase SDKs (LOAD ONLY ONCE) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
 
-    <!-- Firebase Configuration (ONLY ONE CONFIG) -->
+    <!-- Firebase Configuration -->
     <script>
-        // YOUR ACTUAL FIREBASE CONFIG (ONLY ONCE)
         const firebaseConfig = {
             apiKey: "AIzaSyCgAEuD8F41dH5nUeoVxMot4-rTp4olmr8",
             authDomain: "tausug-dictionary-online.firebaseapp.com",
@@ -34,26 +113,26 @@
             measurementId: "G-LBKT0624FT"
         };
         
-        // Initialize Firebase (ONLY ONCE)
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
         const analytics = firebase.analytics();
     </script>
 
-    <!-- Your Main App JavaScript -->
+    <!-- Main App JavaScript -->
     <script>
-        // Helper function to download a file
-        function downloadFile(content, fileName, contentType) {
-            const blob = new Blob([content], { type: contentType });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            a.click();
-            URL.revokeObjectURL(url);
+        // Update status display
+        function updateStatus(message, isError = false) {
+            const statusElement = document.getElementById('statusText');
+            const firebaseStatus = document.getElementById('firebaseStatus');
+            
+            if (statusElement) statusElement.textContent = message;
+            if (firebaseStatus) {
+                firebaseStatus.textContent = message;
+                firebaseStatus.style.color = isError ? '#e74c3c' : '#27ae60';
+            }
         }
-        
+
         // Show notification
         function showNotification(message, isError = false) {
             const notification = document.getElementById('notification');
@@ -63,9 +142,23 @@
             }
             notification.textContent = message;
             notification.className = isError ? 'notification error show' : 'notification show';
+            
             setTimeout(() => {
                 notification.className = 'notification';
             }, 3000);
+        }
+        
+        // Download test function
+        function downloadTest() {
+            const content = 'Firebase Test File\nCreated: ' + new Date().toLocaleString();
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'firebase-test.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('📥 Download started successfully');
         }
         
         // Firebase upload functions
@@ -76,10 +169,10 @@
             auth.onAuthStateChanged(() => {
                 firebaseReady = true;
                 console.log('✅ Firebase is ready');
+                updateStatus('Connected');
                 showNotification('Firebase connected successfully');
+                document.getElementById('processBtn').disabled = false;
             });
-        } else {
-            console.error('Firebase auth is not defined');
         }
         
         async function uploadToFirebase(data, collectionName) {
@@ -89,16 +182,19 @@
             }
             
             try {
+                updateStatus('Uploading...');
                 const docRef = await db.collection(collectionName).add({
                     ...data,
                     createdAt: new Date(),
                     updatedAt: new Date()
                 });
-                showNotification('✅ Data saved to Firebase');
+                showNotification('✅ Data saved to Firebase! ID: ' + docRef.id);
+                updateStatus('Upload Successful');
                 return docRef.id;
             } catch (error) {
                 console.error('Firebase upload failed:', error);
                 showNotification('❌ Upload failed: ' + error.message, true);
+                updateStatus('Upload Failed', true);
                 throw error;
             }
         }
@@ -122,64 +218,53 @@
             } catch (error) {
                 console.warn('Upload failed, keeping backup');
                 showNotification('💾 Data saved locally - will sync when online', true);
+                updateStatus('Saved Locally (Offline)');
                 return null;
             }
         }
         
-        // Process button click (modify this to match your existing code)
+        // Process button click
         const processBtn = document.getElementById('processBtn');
         if (processBtn) {
+            // Disable button until Firebase is ready
+            processBtn.disabled = true;
+            
             processBtn.addEventListener('click', async () => {
-                // EXAMPLE: Replace this with your actual data
+                const testData = document.getElementById('testInput').value;
+                
+                if (!testData) {
+                    showNotification('❌ Please enter some test data', true);
+                    return;
+                }
+                
                 const data = { 
-                    test: "This is test data",
-                    timestamp: new Date().toISOString()
+                    testData: testData,
+                    timestamp: new Date().toISOString(),
+                    app: 'Tausug Dictionary Test'
                 };
-                const result = await uploadWithBackup(data, 'test-collection');
+                
+                const result = await uploadWithBackup(data, 'testEntries');
                 
                 if (result) {
                     console.log('Upload successful:', result);
                 }
             });
-        } else {
-            console.log('Process button not found');
         }
-        
-        // Process example on load
-        setTimeout(() => {
-            if (processBtn) processBtn.click();
-        }, 500);
         
         // Retry failed uploads when online
         window.addEventListener('online', () => {
             console.log('🌐 Online - checking for failed uploads');
             showNotification('🌐 Back online - syncing data');
-            // Add retry logic here if needed
+            updateStatus('Online - Syncing');
         });
 
-        // Add some basic styles if not already in styles.css
-        const style = document.createElement('style');
-        style.textContent = `
-            .notification {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px;
-                border-radius: 5px;
-                background: #4CAF50;
-                color: white;
-                display: none;
-                z-index: 1000;
-                max-width: 300px;
-            }
-            .notification.show {
-                display: block;
-            }
-            .notification.error {
-                background: #f44336;
-            }
-        `;
-        document.head.appendChild(style);
+        window.addEventListener('offline', () => {
+            showNotification('📴 Offline - data will be saved locally', true);
+            updateStatus('Offline', true);
+        });
+
+        // Check for console errors
+        console.log('App initialized - check for errors in console (F12)');
     </script>
 </body>
 </html>
