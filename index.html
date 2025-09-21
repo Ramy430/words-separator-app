@@ -153,6 +153,10 @@
             background: linear-gradient(to right, #9b59b6, #8e44ad);
         }
         
+        .search-btn {
+            background: linear-gradient(to right, #3498db, #2980b9);
+        }
+        
         .output-section {
             margin-top: 20px;
         }
@@ -344,12 +348,16 @@
             border-radius: 10px;
             z-index: 1000;
             width: 80%;
-            max-width: 500px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
             display: none;
         }
         
         .modal h3 {
             margin-top: 0;
+            margin-bottom: 15px;
+            color: #6a11cb;
         }
         
         .modal-buttons {
@@ -412,6 +420,38 @@
             animation: spin 1s ease-in-out infinite;
         }
         
+        /* Search results styling */
+        .translation-item {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .translation-item h4 {
+            margin: 0 0 8px 0;
+            color: #2575fc;
+            font-size: 18px;
+        }
+        
+        .translation-item p {
+            margin: 5px 0;
+            color: #555;
+        }
+        
+        .search-results-count {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #6a11cb;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .buttons, .auth-buttons {
@@ -427,6 +467,11 @@
             .word-box {
                 width: 100%;
             }
+            
+            .modal {
+                width: 90%;
+                padding: 15px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -436,6 +481,10 @@
             
             h1 {
                 font-size: 1.8rem;
+            }
+            
+            .search-input {
+                flex-direction: column;
             }
         }
         
@@ -467,6 +516,27 @@
         .success-check {
             color: #2ecc71;
             margin-right: 5px;
+        }
+        
+        .search-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4fc;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+        }
+        
+        .search-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .search-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -537,6 +607,17 @@
                 <p><strong>How to use:</strong> Enter a sentence and click "Process Sentence". The app will separate words and identify parts of speech. You can write your translations in the input boxes below each word. All translation fields are fully editable.</p>
             </div>
             
+            <div class="search-section">
+                <h3>Search Translations</h3>
+                <p>Search for specific words in your translations:</p>
+                <div class="search-input">
+                    <input type="text" id="searchInput" placeholder="Enter word to search...">
+                    <button id="searchBtn" class="search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
+            
             <div class="firebase-help">
                 <h4>Demo Authentication</h4>
                 <p>For demo purposes, use these credentials:</p>
@@ -576,9 +657,6 @@
                     <button id="firebaseSaveBtn" class="firebase-btn" disabled>
                         <i class="fas fa-database"></i> Save to Firebase
                     </button>
-                    <button id="firebaseLoadBtn" class="firebase-btn" disabled>
-                        <i class="fas fa-download"></i> Load from Firebase
-                    </button>
                 </div>
             </div>
         </div>
@@ -595,9 +673,9 @@
     
     <div class="modal-backdrop" id="modalBackdrop"></div>
     
-    <div class="modal" id="firebaseModal">
-        <h3>Firebase Data</h3>
-        <div id="firebaseData"></div>
+    <div class="modal" id="searchModal">
+        <h3>Search Results</h3>
+        <div id="searchResults" class="search-results"></div>
         <div class="modal-buttons">
             <button id="closeModal">Close</button>
         </div>
@@ -613,14 +691,13 @@
             const saveJsonBtn = document.getElementById('saveJsonBtn');
             const copyJsonBtn = document.getElementById('copyJsonBtn');
             const firebaseSaveBtn = document.getElementById('firebaseSaveBtn');
-            const firebaseLoadBtn = document.getElementById('firebaseLoadBtn');
             const notification = document.getElementById('notification');
             const languageSelect = document.getElementById('languageSelect');
             const totalDisplay = document.getElementById('totalDisplay');
             const uniqueWordsContainer = document.getElementById('uniqueWords');
             const modalBackdrop = document.getElementById('modalBackdrop');
-            const firebaseModal = document.getElementById('firebaseModal');
-            const firebaseData = document.getElementById('firebaseData');
+            const searchModal = document.getElementById('searchModal');
+            const searchResults = document.getElementById('searchResults');
             const closeModal = document.getElementById('closeModal');
             const signInBtn = document.getElementById('signInBtn');
             const signOutBtn = document.getElementById('signOutBtn');
@@ -630,6 +707,8 @@
             const passwordInput = document.getElementById('password');
             const submitAuth = document.getElementById('submitAuth');
             const cancelAuth = document.getElementById('cancelAuth');
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
             
             let analyzedWords = [];
             let uniqueWordsSet = new Set();
@@ -705,7 +784,6 @@
                     signOutBtn.style.display = 'block';
                     authForm.style.display = 'none';
                     firebaseSaveBtn.disabled = false;
-                    firebaseLoadBtn.disabled = false;
                     
                     showNotification('Signed in successfully!');
                 } else {
@@ -720,7 +798,6 @@
                 signInBtn.style.display = 'block';
                 signOutBtn.style.display = 'none';
                 firebaseSaveBtn.disabled = true;
-                firebaseLoadBtn.disabled = true;
                 
                 showNotification('Signed out successfully');
             });
@@ -946,70 +1023,67 @@
                 }
             });
             
-            // Load from Firebase
-            firebaseLoadBtn.addEventListener('click', async function() {
-                try {
-                    // Load button loading state
-                    const originalText = firebaseLoadBtn.innerHTML;
-                    firebaseLoadBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Loading...';
-                    firebaseLoadBtn.disabled = true;
-                    
-                    showNotification('Loading from Firebase...');
-                    
-                    // In a real app, you would load from Firestore here
-                    // For demo purposes, we'll simulate the load
-                    setTimeout(() => {
-                        // Restore button state
-                        firebaseLoadBtn.innerHTML = '<i class="fas fa-download"></i> Load from Firebase';
-                        firebaseLoadBtn.disabled = false;
-                        
-                        // Display sample data in modal
-                        firebaseData.innerHTML = `
-                            <div class="translation-item">
-                                <h4>The quick brown fox jumps over the lazy dog</h4>
-                                <p><strong>Language:</strong> Tausug</p>
-                                <p><strong>Saved:</strong> ${new Date().toLocaleString()}</p>
-                                <p><strong>Words:</strong> 9</p>
-                                <button class="auth-btn load-btn">Load This Translation</button>
-                            </div>
-                            <div class="translation-item">
-                                <h4>How amazing is this application</h4>
-                                <p><strong>Language:</strong> English</p>
-                                <p><strong>Saved:</strong> ${new Date(Date.now() - 86400000).toLocaleString()}</p>
-                                <p><strong>Words:</strong> 4</p>
-                                <button class="auth-btn load-btn">Load This Translation</button>
-                            </div>
-                        `;
-                        
-                        // Add event listeners to load buttons
-                        document.querySelectorAll('.load-btn').forEach(btn => {
-                            btn.addEventListener('click', function() {
-                                showNotification('<i class="fas fa-check-circle success-check"></i> Translation loaded from Firebase!');
-                                closeModal.click();
-                            });
-                        });
-                        
-                        // Show modal
-                        modalBackdrop.style.display = 'block';
-                        firebaseModal.style.display = 'block';
-                        
-                        showNotification('<i class="fas fa-check-circle success-check"></i> Data loaded from Firebase successfully!');
-                    }, 1500);
-                    
-                } catch (error) {
-                    console.error("Error loading from Firebase: ", error);
-                    // Restore button state
-                    firebaseLoadBtn.innerHTML = '<i class="fas fa-download"></i> Load from Firebase';
-                    firebaseLoadBtn.disabled = false;
-                    
-                    showNotification('Error loading from Firebase: ' + error.message, true);
+            // Search functionality
+            searchBtn.addEventListener('click', function() {
+                const searchTerm = searchInput.value.trim().toLowerCase();
+                
+                if (!searchTerm) {
+                    showNotification('Please enter a search term', true);
+                    return;
                 }
+                
+                if (analyzedWords.length === 0) {
+                    showNotification('Please process a sentence first', true);
+                    return;
+                }
+                
+                // Search for the term in analyzed words
+                const results = analyzedWords.filter(word => 
+                    word.original.toLowerCase().includes(searchTerm) || 
+                    word.clean.toLowerCase().includes(searchTerm) || 
+                    (word.translation && word.translation.toLowerCase().includes(searchTerm))
+                );
+                
+                // Display results in modal
+                searchResults.innerHTML = '';
+                
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<div class="no-results">No results found for: "' + searchTerm + '"</div>';
+                } else {
+                    // Add results count
+                    const resultsCount = document.createElement('div');
+                    resultsCount.className = 'search-results-count';
+                    resultsCount.textContent = `Found ${results.length} result${results.length !== 1 ? 's' : ''} for: "${searchTerm}"`;
+                    searchResults.appendChild(resultsCount);
+                    
+                    // Add each result
+                    results.forEach(result => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'translation-item';
+                        resultItem.innerHTML = `
+                            <h4>${result.original}</h4>
+                            <p><strong>Part of Speech:</strong> ${result.pos}</p>
+                            <p><strong>Translation:</strong> ${result.translation || 'Not translated yet'}</p>
+                        `;
+                        searchResults.appendChild(resultItem);
+                    });
+                }
+                
+                // Show modal
+                modalBackdrop.style.display = 'block';
+                searchModal.style.display = 'block';
             });
             
             // Close modal
             closeModal.addEventListener('click', function() {
                 modalBackdrop.style.display = 'none';
-                firebaseModal.style.display = 'none';
+                searchModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking on backdrop
+            modalBackdrop.addEventListener('click', function() {
+                modalBackdrop.style.display = 'none';
+                searchModal.style.display = 'none';
             });
             
             // Helper function to download a file
@@ -1027,6 +1101,11 @@
             function showNotification(message, isError = false) {
                 notification.innerHTML = message;
                 notification.className = isError ? 'notification error show' : 'notification show';
+                
+                // Auto-hide after 3 seconds
+                setTimeout(() => {
+                    notification.className = 'notification';
+                }, 3000);
             }
             
             // Process the example sentence on load
