@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tausug Dictionary Online - Word Separator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .municipality {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .description {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .app-content {
+            padding: 25px;
+        }
+        
+        .auth-section {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .user-info {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        
+        .auth-btn {
+            padding: 8px 15px;
+            background: linear-gradient(to right, #4caf50, #2e7d32);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .input-section {
+            margin-bottom: 25px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            resize: none;
+            font-size: 16px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #6a11cb;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .save-btn {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+        }
+        
+        .firebase-btn {
+            background: linear-gradient(to right, #FFA000, #FF8F00);
+        }
+        
+        .total-btn {
+            background: linear-gradient(to right, #9b59b6, #8e44ad);
+        }
+        
+        .search-btn {
+            background: linear-gradient(to right, #3498db, #2980b9);
+        }
+        
+        .output-section {
+            margin-top: 20px;
+        }
+        
+        .output-title {
+            font-size: 1.3rem;
+            color: #444;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .words-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .word-box {
+            width: 140px;
+            padding: 12px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+        
+        .word {
+            font-weight: bold;
+            color: #2575fc;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .pos {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        .translation-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px dashed #adb5bd;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .translation-input:focus {
+            outline: none;
+            border-color: #6a11cb;
+            border-style: solid;
+        }
+        
+        .instructions {
+            background-color: #e8f4fc;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+        
+        .footer-text {
+            margin: 5px 0;
+        }
+        
+        .save-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .save-options {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #2ecc71;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+            animation: fadeIn 0.3s, fadeOut 0.3s 2.7s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+        
+        .notification.error {
+            background: #e74c3c;
+        }
+        
+        .notification.show {
+            display: block;
+        }
+        
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+            align-items: center;
+        }
+        
+        select {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .total-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6a11cb;
+            margin: 10px 0;
+        }
+        
+        .unique-words {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .unique-word {
+            display: inline-block;
+            background: #e8f4fc;
+            padding: 5px 10px;
+            margin: 4px;
+            border-radius: 20px;
+        }
+
+        .firebase-options {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .modal h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #6a11cb;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .firebase-help {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .firebase-help h4 {
+            margin-top: 0;
+            color: #ff9800;
+        }
+        
+        .copyright {
+            font-weight: bold;
+            color: #6a11cb;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .btn-loading {
+            position: relative;
+            color: transparent;
+        }
+        
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        /* Search results styling */
+        .translation-item {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .translation-item h4 {
+            margin: 0 0 8px 0;
+            color: #2575fc;
+            font-size: 18px;
+        }
+        
+        .translation-item p {
+            margin: 5px 0;
+            color: #555;
+        }
+        
+        .search-results-count {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #6a11cb;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .buttons, .auth-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button, .auth-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .word-box {
+                width: 100%;
+            }
+            
+            .modal {
+                width: 90%;
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .search-input {
+                flex-direction: column;
+            }
+        }
+        
+        .auth-form {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .success-check {
+            color: #2ecc71;
+            margin-right: 5px;
+        }
+        
+        .search-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4fc;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+        }
+        
+        .search-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .search-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Tausug Dictionary Online</h1>
+            <div class="municipality">Word Separator Tool | Omar Municipality, Sulu, Philippines</div>
+            <div class="description">Separate sentences into words with parts of speech and translations</div>
+        </header>
+        
+        <div class="app-content">
+            <div class="auth-section">
+                <h4>Authentication Required</h4>
+                <p>You need to sign in to save or load translations from Firebase.</p>
+                <div class="user-info" id="userInfo">Not signed in</div>
+                <div class="auth-buttons">
+                    <button class="auth-btn" id="signInBtn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                    <button class="auth-btn" id="signOutBtn" style="display: none;"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+                </div>
+                
+                <div class="auth-form" id="authForm">
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" placeholder="Enter your password">
+                    </div>
+                    <div class="auth-buttons">
+                        <button class="auth-btn" id="submitAuth"><i class="fas fa-check"></i> Submit</button>
+                        <button class="auth-btn" id="cancelAuth" style="background: #e74c3c;"><i class="fas fa-times"></i> Cancel</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="input-section">
+                <textarea id="inputText" placeholder="Enter a sentence to analyze...">The quick brown fox jumps over the lazy dog. How amazing!</textarea>
+                <div class="language-selector">
+                    <span>Translate to:</span>
+                    <select id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="ts">Tausug</option>
+                        <option value="ar">Arabic</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                        <option value="it">Italian</option>
+                        <option value="pt">Portuguese</option>
+                        <option value="custom">Custom (Write your own)</option>
+                    </select>
+                </div>
+                <div class="buttons">
+                    <button id="processBtn">
+                        <i class="fas fa-cogs"></i> Process Sentence
+                    </button>
+                    <button id="resetBtn">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                    <button id="totalBtn" class="total-btn">
+                        <i class="fas fa-calculator"></i> Total
+                    </button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <p><strong>How to use:</strong> Enter a sentence and click "Process Sentence". The app will separate words and identify parts of speech. You can write your translations in the input boxes below each word. All translation fields are fully editable.</p>
+            </div>
+            
+            <div class="search-section">
+                <h3>Search Translations</h3>
+                <p>Search for specific words in your translations:</p>
+                <div class="search-input">
+                    <input type="text" id="searchInput" placeholder="Enter word to search...">
+                    <button id="searchBtn" class="search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
+            
+            <div class="firebase-help">
+                <h4>Demo Authentication</h4>
+                <p>For demo purposes, use these credentials:</p>
+                <p><strong>Email:</strong> admin@tausugdictionary.com</p>
+                <p><strong>Password:</strong> TausugAdmin2025!</p>
+            </div>
+            
+            <div class="output-section">
+                <h2 class="output-title">Word Analysis</h2>
+                <div id="wordsContainer" class="words-container">
+                    <!-- Words will be generated here -->
+                </div>
+            </div>
+            
+            <div class="total-section">
+                <h3>Word Count</h3>
+                <div id="totalDisplay" class="total-display">Total Words: 0 | Unique Words: 0</div>
+                <div id="uniqueWords" class="unique-words">
+                    <!-- Unique words will be displayed here -->
+                </div>
+            </div>
+            
+            <div class="save-section">
+                <h3>Save Your Translations</h3>
+                <p>Click to save:</p>
+                <div class="save-options">
+                    <button id="saveJsonBtn" class="save-btn">
+                        <i class="fas fa-file-export"></i> Export as JSON
+                    </button>
+                    <button id="copyJsonBtn" class="save-btn">
+                        <i class="fas fa-copy"></i> Copy JSON to Clipboard
+                    </button>
+                </div>
+
+                <div class="firebase-options">
+                    <h4>Firebase Storage</h4>
+                    <button id="firebaseSaveBtn" class="firebase-btn" disabled>
+                        <i class="fas fa-database"></i> Save to Firebase
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p class="footer-text">Tausug Dictionary Online &copy; 2025 | Analyze and translate text with ease</p>
+            <p class="footer-text copyright">Copyright Omar Municipality, Sulu, Philippines</p>
+        </footer>
+    </div>
+
+    <div class="notification" id="notification">
+        File downloaded successfully!
+    </div>
+    
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    
+    <div class="modal" id="searchModal">
+        <h3>Search Results</h3>
+        <div id="searchResults" class="search-results"></div>
+        <div class="modal-buttons">
+            <button id="closeModal">Close</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const processBtn = document.getElementById('processBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const totalBtn = document.getElementById('totalBtn');
+            const inputText = document.getElementById('inputText');
+            const wordsContainer = document.getElementById('wordsContainer');
+            const saveJsonBtn = document.getElementById('saveJsonBtn');
+            const copyJsonBtn = document.getElementById('copyJsonBtn');
+            const firebaseSaveBtn = document.getElementById('firebaseSaveBtn');
+            const notification = document.getElementById('notification');
+            const languageSelect = document.getElementById('languageSelect');
+            const totalDisplay = document.getElementById('totalDisplay');
+            const uniqueWordsContainer = document.getElementById('uniqueWords');
+            const modalBackdrop = document.getElementById('modalBackdrop');
+            const searchModal = document.getElementById('searchModal');
+            const searchResults = document.getElementById('searchResults');
+            const closeModal = document.getElementById('closeModal');
+            const signInBtn = document.getElementById('signInBtn');
+            const signOutBtn = document.getElementById('signOutBtn');
+            const userInfo = document.getElementById('userInfo');
+            const authForm = document.getElementById('authForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const submitAuth = document.getElementById('submitAuth');
+            const cancelAuth = document.getElementById('cancelAuth');
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            
+            let analyzedWords = [];
+            let uniqueWordsSet = new Set();
+            let currentUser = null;
+            
+            // Enhanced parts of speech database
+            const partsOfSpeech = {
+                'the': 'determiner',
+                'a': 'determiner',
+                'an': 'determiner',
+                'quick': 'adjective',
+                'brown': 'adjective',
+                'lazy': 'adjective',
+                'amazing': 'adjective',
+                'fox': 'noun',
+                'dog': 'noun',
+                'jumps': 'verb',
+                'jump': 'verb',
+                'over': 'preposition',
+                'how': 'adverb',
+                'very': 'adverb'
+            };
+            
+            // Enhanced translations database
+            const translations = {
+                'the': { en: 'the', ts: 'in', ar: 'ال' },
+                'quick': { en: 'quick', ts: 'maddas', ar: 'سريع' },
+                'brown': { en: 'brown', ts: 'kulay kakah', ar: 'بني' },
+                'fox': { en: 'fox', ts: 'urus', ar: 'ثعلب' },
+                'jumps': { en: 'jumps', ts: 'lumuksu', ar: 'يقفز' },
+                'over': { en: 'over', ts: 'hampang', ar: 'فوق' },
+                'lazy': { en: 'lazy', ts: 'malas', ar: 'كسول' },
+                'dog': { en: 'dog', ts: 'iru', ar: 'كلب' },
+                'how': { en: 'how', ts: 'biyaunu', ar: 'كيف' },
+                'amazing': { en: 'amazing', ts: 'mausab', ar: 'مذهل' }
+            };
+            
+            // Show authentication form
+            signInBtn.addEventListener('click', function() {
+                authForm.style.display = 'block';
+                signInBtn.style.display = 'none';
+            });
+            
+            // Cancel authentication
+            cancelAuth.addEventListener('click', function() {
+                authForm.style.display = 'none';
+                signInBtn.style.display = 'block';
+                emailInput.value = '';
+                passwordInput.value = '';
+            });
+            
+            // Submit authentication
+            submitAuth.addEventListener('click', function() {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                if (!email || !password) {
+                    showNotification('Please enter both email and password', true);
+                    return;
+                }
+                
+                // For demo purposes, check against hardcoded credentials
+                if (email === 'admin@tausugdictionary.com' && password === 'TausugAdmin2025!') {
+                    // Simulate successful authentication
+                    currentUser = {
+                        email: email,
+                        uid: 'demo-user-id',
+                        displayName: email.split('@')[0]
+                    };
+                    
+                    userInfo.textContent = `Signed in as: ${currentUser.email}`;
+                    signInBtn.style.display = 'none';
+                    signOutBtn.style.display = 'block';
+                    authForm.style.display = 'none';
+                    firebaseSaveBtn.disabled = false;
+                    
+                    showNotification('Signed in successfully!');
+                } else {
+                    showNotification('Invalid email or password', true);
+                }
+            });
+            
+            // Sign out handler
+            signOutBtn.addEventListener('click', function() {
+                currentUser = null;
+                userInfo.textContent = 'Not signed in';
+                signInBtn.style.display = 'block';
+                signOutBtn.style.display = 'none';
+                firebaseSaveBtn.disabled = true;
+                
+                showNotification('Signed out successfully');
+            });
+            
+            // Process the sentence
+            processBtn.addEventListener('click', function() {
+                const sentence = inputText.value.trim();
+                if (!sentence) {
+                    alert('Please enter a sentence');
+                    return;
+                }
+                
+                // Clear previous results
+                wordsContainer.innerHTML = '';
+                analyzedWords = [];
+                uniqueWordsSet.clear();
+                
+                // Split into words using improved regex
+                const words = sentence.split(/\s+|(?=[.,!?;:])|(?<=[.,!?;:])/).filter(word => word.trim() !== '');
+                const selectedLanguage = languageSelect.value;
+                
+                // Create word boxes
+                words.forEach(word => {
+                    const cleanWord = word.replace(/[.,!?;:"]/g, '').toLowerCase();
+                    if (!cleanWord) return; // Skip empty words
+                    
+                    const pos = partsOfSpeech[cleanWord] || 'unknown';
+                    
+                    // Get translation if available
+                    let translation = '';
+                    if (translations[cleanWord] && selectedLanguage !== 'custom') {
+                        translation = translations[cleanWord][selectedLanguage] || '';
+                    }
+                    
+                    // Store word data
+                    analyzedWords.push({
+                        original: word,
+                        clean: cleanWord,
+                        translation: translation,
+                        pos: pos,
+                        hasTranslation: !!translation
+                    });
+                    
+                    // Add to unique words set
+                    uniqueWordsSet.add(cleanWord);
+                    
+                    // Create word box
+                    const wordBox = document.createElement('div');
+                    wordBox.className = 'word-box';
+                    
+                    const wordEl = document.createElement('div');
+                    wordEl.className = 'word';
+                    wordEl.textContent = word;
+                    
+                    const posEl = document.createElement('div');
+                    posEl.className = 'pos';
+                    posEl.textContent = pos;
+                    
+                    const translationInput = document.createElement('input');
+                    translationInput.type = 'text';
+                    translationInput.className = 'translation-input';
+                    translationInput.placeholder = 'Enter translation...';
+                    translationInput.value = translation;
+                    
+                    // Update the data model when translation changes
+                    translationInput.addEventListener('input', function() {
+                        const index = analyzedWords.findIndex(item => item.original === word);
+                        if (index !== -1) {
+                            analyzedWords[index].translation = this.value;
+                            analyzedWords[index].hasTranslation = this.value.trim() !== '';
+                        }
+                    });
+                    
+                    wordBox.appendChild(wordEl);
+                    wordBox.appendChild(posEl);
+                    wordBox.appendChild(translationInput);
+                    
+                    wordsContainer.appendChild(wordBox);
+                });
+                
+                updateTotalDisplay();
+                showNotification(`Processed ${words.length} words`);
+            });
+            
+            // Reset the app
+            resetBtn.addEventListener('click', function() {
+                inputText.value = '';
+                wordsContainer.innerHTML = '';
+                analyzedWords = [];
+                uniqueWordsSet.clear();
+                updateTotalDisplay();
+                inputText.focus();
+                showNotification('Application reset');
+            });
+            
+            // Calculate and display total
+            totalBtn.addEventListener('click', function() {
+                updateTotalDisplay();
+                showNotification('Total words calculated!');
+            });
+            
+            // Update total display
+            function updateTotalDisplay() {
+                totalDisplay.textContent = `Total Words: ${analyzedWords.length} | Unique Words: ${uniqueWordsSet.size}`;
+                
+                // Display unique words
+                uniqueWordsContainer.innerHTML = '';
+                uniqueWordsSet.forEach(word => {
+                    const wordEl = document.createElement('span');
+                    wordEl.className = 'unique-word';
+                    wordEl.textContent = word;
+                    uniqueWordsContainer.appendChild(wordEl);
+                });
+            }
+            
+            // Save as JSON
+            saveJsonBtn.addEventListener('click', function() {
+                if (analyzedWords.length === 0) {
+                    alert('Please process a sentence first');
+                    return;
+                }
+                
+                // Filter out words without translations if needed
+                const wordsWithTranslations = analyzedWords; // We'll save all words
+                
+                if (wordsWithTranslations.length === 0) {
+                    showNotification('No words to save!', true);
+                    return;
+                }
+                
+                // Prepare data for export
+                const exportData = {
+                    words: wordsWithTranslations,
+                    language: languageSelect.options[languageSelect.selectedIndex].text,
+                    originalSentence: inputText.value,
+                    exportDate: new Date().toISOString(),
+                    totalWords: wordsWithTranslations.length,
+                    uniqueWords: Array.from(uniqueWordsSet)
+                };
+                
+                const content = JSON.stringify(exportData, null, 2);
+                downloadFile(content, 'word-translations.json', 'application/json');
+                showNotification('File downloaded successfully!');
+            });
+            
+            // Copy JSON to clipboard
+            copyJsonBtn.addEventListener('click', function() {
+                if (analyzedWords.length === 0) {
+                    alert('Please process a sentence first');
+                    return;
+                }
+                
+                // Prepare data for export
+                const exportData = {
+                    words: analyzedWords,
+                    language: languageSelect.options[languageSelect.selectedIndex].text,
+                    originalSentence: inputText.value,
+                    exportDate: new Date().toISOString(),
+                    totalWords: analyzedWords.length,
+                    uniqueWords: Array.from(uniqueWordsSet)
+                };
+                
+                const content = JSON.stringify(exportData, null, 2);
+                
+                // Copy to clipboard
+                navigator.clipboard.writeText(content).then(() => {
+                    showNotification('JSON copied to clipboard!');
+                }).catch(err => {
+                    alert('Failed to copy JSON: ' + err);
+                });
+            });
+            
+            // Save to Firebase
+            firebaseSaveBtn.addEventListener('click', async function() {
+                if (!currentUser) {
+                    showNotification('Please sign in to save to Firebase', true);
+                    return;
+                }
+                
+                if (analyzedWords.length === 0) {
+                    alert('Please process a sentence first');
+                    return;
+                }
+                
+                try {
+                    // Save button loading state
+                    const originalText = firebaseSaveBtn.innerHTML;
+                    firebaseSaveBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Saving...';
+                    firebaseSaveBtn.disabled = true;
+                    
+                    showNotification('Saving to Firebase...');
+                    
+                    // Prepare data for saving
+                    const saveData = {
+                        words: analyzedWords,
+                        language: languageSelect.options[languageSelect.selectedIndex].text,
+                        originalSentence: inputText.value,
+                        savedAt: new Date().toISOString(),
+                        totalWords: analyzedWords.length,
+                        uniqueWords: Array.from(uniqueWordsSet),
+                        userId: currentUser.uid,
+                        userEmail: currentUser.email
+                    };
+                    
+                    // In a real app, you would save to Firestore here
+                    // For demo purposes, we'll simulate the save
+                    setTimeout(() => {
+                        // Restore button state
+                        firebaseSaveBtn.innerHTML = '<i class="fas fa-database"></i> Save to Firebase';
+                        firebaseSaveBtn.disabled = false;
+                        
+                        showNotification('<i class="fas fa-check-circle success-check"></i> Translations saved to Firebase successfully!');
+                        console.log('Simulated save data:', saveData);
+                    }, 1500);
+                    
+                } catch (error) {
+                    console.error("Error saving to Firebase: ", error);
+                    // Restore button state
+                    firebaseSaveBtn.innerHTML = '<i class="fas fa-database"></i> Save to Firebase';
+                    firebaseSaveBtn.disabled = false;
+                    
+                    showNotification('Error saving to Firebase: ' + error.message, true);
+                }
+            });
+            
+            // Search functionality
+            searchBtn.addEventListener('click', function() {
+                const searchTerm = searchInput.value.trim().toLowerCase();
+                
+                if (!searchTerm) {
+                    showNotification('Please enter a search term', true);
+                    return;
+                }
+                
+                if (analyzedWords.length === 0) {
+                    showNotification('Please process a sentence first', true);
+                    return;
+                }
+                
+                // Search for the term in analyzed words
+                const results = analyzedWords.filter(word => 
+                    word.original.toLowerCase().includes(searchTerm) || 
+                    word.clean.toLowerCase().includes(searchTerm) || 
+                    (word.translation && word.translation.toLowerCase().includes(searchTerm))
+                );
+                
+                // Display results in modal
+                searchResults.innerHTML = '';
+                
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<div class="no-results">No results found for: "' + searchTerm + '"</div>';
+                } else {
+                    // Add results count
+                    const resultsCount = document.createElement('div');
+                    resultsCount.className = 'search-results-count';
+                    resultsCount.textContent = `Found ${results.length} result${results.length !== 1 ? 's' : ''} for: "${searchTerm}"`;
+                    searchResults.appendChild(resultsCount);
+                    
+                    // Add each result
+                    results.forEach(result => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'translation-item';
+                        resultItem.innerHTML = `
+                            <h4>${result.original}</h4>
+                            <p><strong>Part of Speech:</strong> ${result.pos}</p>
+                            <p><strong>Translation:</strong> ${result.translation || 'Not translated yet'}</p>
+                        `;
+                        searchResults.appendChild(resultItem);
+                    });
+                }
+                
+                // Show modal
+                modalBackdrop.style.display = 'block';
+                searchModal.style.display = 'block';
+            });
+            
+            // Close modal
+            closeModal.addEventListener('click', function() {
+                modalBackdrop.style.display = 'none';
+                searchModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking on backdrop
+            modalBackdrop.addEventListener('click', function() {
+                modalBackdrop.style.display = 'none';
+                searchModal.style.display = 'none';
+            });
+            
+            // Helper function to download a file
+            function downloadFile(content, fileName, contentType) {
+                const blob = new Blob([content], { type: contentType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+            
+            // Show notification
+            function showNotification(message, isError = false) {
+                notification.innerHTML = message;
+                notification.className = isError ? 'notification error show' : 'notification show';
+                
+                // Auto-hide after 3 seconds
+                setTimeout(() => {
+                    notification.className = 'notification';
+                }, 3000);
+            }
+            
+            // Process the example sentence on load
+            setTimeout(() => processBtn.click(), 500);
+        });
+    </script>
+</body>
+</html>
