@@ -1,295 +1,527 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tausug-English Dictionary & Translator</title>
-<style>
-body { font-family: Arial, sans-serif; background: #f0f4f8; padding: 20px; }
-h1 { text-align: center; margin-bottom: 20px; color: #333; }
-form, .controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
-input[type="text"], input[type="email"], input[type="password"], input[type="file"], button { padding: 8px; font-size: 14px; border-radius: 5px; border: 1px solid #ccc; }
-button { cursor: pointer; background: #007bff; color: #fff; border: none; transition: background 0.3s; }
-button:hover { background: #0056b3; }
-ul { list-style: none; padding: 0; max-width: 700px; margin: auto; }
-li { background: #fff; padding: 10px; margin-bottom: 5px; border-radius: 8px; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-li span { flex-grow: 1; cursor: pointer; }
-li input { flex-grow: 1; padding: 4px 6px; font-size: 14px; }
-.notification { text-align: center; margin-bottom: 15px; color: green; font-weight: bold; }
-.translation-box { text-align: center; font-size: 16px; margin-bottom: 20px; color: #555; }
-.auth { text-align: center; margin-bottom: 20px; }
-.hidden { display: none; }
-.suggestions { max-width: 700px; margin: auto; text-align: left; background: #fff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.suggestions div { padding: 6px 10px; cursor: pointer; }
-.suggestions div:hover { background: #e0e0e0; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tausug-English Dictionary</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+    header {
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      color: white;
+      padding: 25px;
+      text-align: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2.2rem;
+    }
+    .subtitle {
+      margin-top: 5px;
+      opacity: 0.9;
+    }
+    .app-content {
+      padding: 25px;
+    }
+    #search-container {
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    #search {
+      width: 70%;
+      padding: 12px 20px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 50px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    #search:focus {
+      border-color: #6a11cb;
+    }
+    #suggestions {
+      position: absolute;
+      background: white;
+      border: 1px solid #ddd;
+      width: 70%;
+      left: 15%;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      display: none;
+    }
+    #suggestions div {
+      padding: 10px 15px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    #suggestions div:last-child {
+      border-bottom: none;
+    }
+    #suggestions div:hover {
+      background-color: #f5f5f5;
+    }
+    #add-form {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    #add-form input {
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      width: 200px;
+      transition: border-color 0.3s;
+    }
+    #add-form input:focus {
+      outline: none;
+      border-color: #6a11cb;
+    }
+    #addBtn {
+      padding: 12px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      background: linear-gradient(to right, #2ecc71, #27ae60);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+    #addBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #e0e0e0;
+      padding: 15px;
+      text-align: left;
+    }
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: #444;
+    }
+    tr:hover {
+      background-color: #f8f9fa;
+    }
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      background: #2ecc71;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      display: none;
+      z-index: 1000;
+    }
+    .notification.error {
+      background: #e74c3c;
+    }
+    .notification.show {
+      display: block;
+      animation: fadeIn 0.3s, fadeOut 0.3s 2.7s forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-20px); }
+    }
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #6c757d;
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      background-color: #f8f9fa;
+      color: #6c757d;
+      margin-top: 30px;
+    }
+    @media (max-width: 768px) {
+      #search {
+        width: 90%;
+      }
+      #suggestions {
+        width: 90%;
+        left: 5%;
+      }
+      #add-form {
+        flex-direction: column;
+        align-items: center;
+      }
+      #add-form input {
+        width: 90%;
+      }
+      table {
+        font-size: 14px;
+      }
+      th, td {
+        padding: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <header>
+      <h1>Tausug-English Dictionary</h1>
+      <div class="subtitle">Add, search, and manage Tausug words and their English translations</div>
+    </header>
+    
+    <div class="app-content">
+      <div id="search-container">
+        <input type="text" id="search" placeholder="Search Tausug or English word...">
+        <div id="suggestions"></div>
+      </div>
 
-<h1>Tausug-English Dictionary & Translator</h1>
-<div class="notification" id="notification"></div>
+      <div id="add-form">
+        <input type="text" id="tausug" placeholder="Tausug Word">
+        <input type="text" id="english" placeholder="English Meaning">
+        <button id="addBtn">Add Word</button>
+      </div>
 
-<div class="auth" id="authDiv">
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
-  <button id="loginBtn">Login</button>
-  <button id="signupBtn">Sign Up</button>
-  <button id="logoutBtn" class="hidden">Logout</button>
-  <div id="userInfo"></div>
-</div>
+      <div id="wordsTableContainer">
+        <table>
+          <thead>
+            <tr>
+              <th>Tausug</th>
+              <th>English</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="wordsTable">
+            <tr>
+              <td colspan="3" class="loading">Loading dictionary...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <footer>
+      <p>Tausug-English Dictionary &copy; 2025 | Built with Firebase</p>
+    </footer>
+  </div>
 
-<form id="addForm" class="hidden">
-  <input type="text" id="tausug" placeholder="Tausug word" required>
-  <input type="text" id="english" placeholder="English meaning" required>
-  <button type="submit">Add / Update Word</button>
-</form>
+  <div class="notification" id="notification">Operation completed successfully!</div>
 
-<div class="controls">
-  <input type="text" id="searchInput" placeholder="Search Tausug or English" autocomplete="off">
-  <input type="file" id="importFile" accept=".json" class="hidden">
-  <button id="importBtn" class="hidden">Import JSON</button>
-  <button id="exportBtn" class="hidden">Export JSON</button>
-</div>
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.1/firebase-app.js";
+    import { 
+      getFirestore, 
+      collection, 
+      addDoc, 
+      onSnapshot, 
+      doc, 
+      updateDoc, 
+      deleteDoc, 
+      query, 
+      orderBy 
+    } from "https://www.gstatic.com/firebasejs/10.6.1/firebase-firestore.js";
 
-<div class="suggestions hidden" id="suggestions"></div>
-<div class="translation-box" id="translationBox">Type a word above to see translation</div>
+    // Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG
+    const firebaseConfig = {
+      apiKey: "your-api-key",
+      authDomain: "your-project.firebaseapp.com",
+      projectId: "your-project-id",
+      storageBucket: "your-project.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "your-app-id"
+    };
 
-<ul id="wordsList"></ul>
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db; // Make globally available
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.6.1/firebase-auth.js";
-import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, updateDoc, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.6.1/firebase-firestore.js";
+    // DOM Elements
+    const wordsTable = document.getElementById("wordsTable");
+    const searchInput = document.getElementById("search");
+    const suggestionsDiv = document.getElementById("suggestions");
+    const tausugInput = document.getElementById("tausug");
+    const englishInput = document.getElementById("english");
+    const addBtn = document.getElementById("addBtn");
+    const notification = document.getElementById("notification");
 
-// Firebase config placeholder
-const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
-};
+    const wordsCol = collection(db, "dictionary");
+    let allWords = []; // Store all words for search functionality
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-window.auth = auth;
-window.db = db;
+    // Show notification
+    function showNotification(message, isError = false) {
+      notification.innerHTML = message;
+      notification.className = isError ? 'notification error show' : 'notification show';
+      
+      // Auto-hide after 3 seconds
+      setTimeout(() => {
+        notification.className = 'notification';
+      }, 3000);
+    }
 
-// DOM elements
-const addForm = document.getElementById('addForm');
-const tausugInput = document.getElementById('tausug');
-const englishInput = document.getElementById('english');
-const wordsList = document.getElementById('wordsList');
-const searchInput = document.getElementById('searchInput');
-const importBtn = document.getElementById('importBtn');
-const exportBtn = document.getElementById('exportBtn');
-const importFile = document.getElementById('importFile');
-const notification = document.getElementById('notification');
-const translationBox = document.getElementById('translationBox');
-const suggestionsDiv = document.getElementById('suggestions');
-
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const loginBtn = document.getElementById('loginBtn');
-const signupBtn = document.getElementById('signupBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-const userInfo = document.getElementById('userInfo');
-
-let allWords = [];
-const wordsCollection = collection(db, "tausugDictionary");
-
-function showNotification(msg, color="green") {
-  notification.textContent = msg;
-  notification.style.color = color;
-  setTimeout(() => notification.textContent = '', 3000);
-}
-
-// Render word with inline auto-save
-function renderWord(docData) {
-  const li = document.createElement('li');
-  li.setAttribute('data-id', docData.id);
-
-  const tausugSpan = document.createElement('span');
-  tausugSpan.textContent = docData.tausug;
-  tausugSpan.contentEditable = auth.currentUser ? true : false;
-
-  const englishSpan = document.createElement('span');
-  englishSpan.textContent = docData.english;
-  englishSpan.contentEditable = auth.currentUser ? true : false;
-
-  if(auth.currentUser){
-    tausugSpan.addEventListener('blur', async () => {
-      const newT = tausugSpan.textContent.trim();
-      if(newT && newT !== docData.tausug){
-        const docRef = doc(db, "tausugDictionary", docData.id);
-        await updateDoc(docRef, { tausug: newT });
-        showNotification("Tausug word updated");
+    // Add Word
+    addBtn.addEventListener("click", async () => {
+      const tausug = tausugInput.value.trim();
+      const english = englishInput.value.trim();
+      
+      if (!tausug || !english) {
+        showNotification("Please enter both Tausug and English words.", true);
+        return;
+      }
+      
+      try {
+        // Check if word already exists
+        const existingWord = allWords.find(word => 
+          word.tausug.toLowerCase() === tausug.toLowerCase()
+        );
+        
+        if (existingWord) {
+          showNotification(`"${tausug}" already exists in the dictionary.`, true);
+          return;
+        }
+        
+        // Add button loading state
+        const originalText = addBtn.innerHTML;
+        addBtn.innerHTML = 'Adding...';
+        addBtn.disabled = true;
+        
+        await addDoc(wordsCol, { 
+          tausug: tausug.charAt(0).toUpperCase() + tausug.slice(1).toLowerCase(), 
+          english: english.charAt(0).toUpperCase() + english.slice(1).toLowerCase() 
+        });
+        
+        tausugInput.value = "";
+        englishInput.value = "";
+        tausugInput.focus();
+        
+        showNotification(`"${tausug}" added successfully!`);
+      } catch (error) {
+        console.error("Error adding word: ", error);
+        showNotification("Error adding word. Please try again.", true);
+      } finally {
+        // Restore button state
+        addBtn.innerHTML = 'Add Word';
+        addBtn.disabled = false;
       }
     });
 
-    englishSpan.addEventListener('blur', async () => {
-      const newE = englishSpan.textContent.trim();
-      if(newE && newE !== docData.english){
-        const docRef = doc(db, "tausugDictionary", docData.id);
-        await updateDoc(docRef, { english: newE });
-        showNotification("English word updated");
+    // Render Table and Listen to Firestore Changes
+    onSnapshot(query(wordsCol, orderBy("tausug")), (snapshot) => {
+      wordsTable.innerHTML = "";
+      allWords = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      if (allWords.length === 0) {
+        wordsTable.innerHTML = `
+          <tr>
+            <td colspan="3" style="text-align: center; padding: 30px; color: #6c757d;">
+              No words in dictionary yet. Add your first word above!
+            </td>
+          </tr>
+        `;
+        return;
       }
-    });
-  }
+      
+      allWords.forEach(word => {
+        const tr = document.createElement("tr");
 
-  li.appendChild(tausugSpan);
-  li.appendChild(englishSpan);
-
-  if(auth.currentUser){
-    const deleteBtn = document.createElement('button'); 
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.onclick = async () => {
-      const docRef = doc(db, "tausugDictionary", docData.id);
-      await deleteDoc(docRef);
-      showNotification("Word deleted", "red");
-    };
-    li.appendChild(deleteBtn);
-  }
-
-  wordsList.appendChild(li);
-}
-
-// Real-time sync
-onSnapshot(query(wordsCollection, orderBy('tausug')), snapshot => {
-  wordsList.innerHTML = '';
-  allWords = [];
-  snapshot.forEach(docSnap => {
-    const data = { id: docSnap.id, ...docSnap.data() };
-    renderWord(data);
-    allWords.push(data);
-  });
-});
-
-// Add / update word
-addForm.addEventListener('submit', async e => {
-  e.preventDefault();
-  if (!auth.currentUser) return alert("Login first");
-  const tausug = tausugInput.value.trim();
-  const english = englishInput.value.trim();
-  if(!tausug || !english) return;
-
-  const q = query(wordsCollection, where('tausug', '==', tausug));
-  const querySnapshot = await getDocs(q);
-  if(!querySnapshot.empty){
-    const docRef = doc(db, "tausugDictionary", querySnapshot.docs[0].id);
-    await updateDoc(docRef, { english });
-    showNotification("Word updated");
-  } else {
-    await addDoc(wordsCollection, { tausug, english });
-    showNotification("Word added");
-  }
-  addForm.reset();
-});
-
-// Instant search suggestions
-searchInput.addEventListener('input', () => {
-  const term = searchInput.value.toLowerCase();
-  suggestionsDiv.innerHTML = '';
-  if(!term){
-    suggestionsDiv.classList.add('hidden');
-    translationBox.textContent = "Type a word above to see translation";
-    Array.from(wordsList.children).forEach(li => li.style.display='');
-    return;
-  }
-
-  const matches = allWords.filter(w => w.tausug.toLowerCase().includes(term) || w.english.toLowerCase().includes(term));
-  matches.slice(0, 10).forEach(w => {
-    const div = document.createElement('div');
-    div.textContent = `${w.tausug} = ${w.english}`;
-    div.onclick = () => {
-      searchInput.value = w.tausug;
-      translationBox.textContent = `${w.tausug} = ${w.english}`;
-      suggestionsDiv.classList.add('hidden');
-    };
-    suggestionsDiv.appendChild(div);
-  });
-  suggestionsDiv.classList.toggle('hidden', matches.length===0);
-
-  Array.from(wordsList.children).forEach(li => {
-    const text = li.children[0].textContent.toLowerCase() + li.children[1].textContent.toLowerCase();
-    li.style.display = text.includes(term) ? '' : 'none';
-  });
-
-  const found = allWords.find(w => w.tausug.toLowerCase() === term || w.english.toLowerCase() === term);
-  translationBox.textContent = found ? `${found.tausug} = ${found.english}` : "No translation found";
-});
-
-// Export / Import JSON
-exportBtn.addEventListener('click', async () => {
-  const snapshot = await getDocs(wordsCollection);
-  const data = snapshot.docs.map(docSnap => docSnap.data());
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'tausug_dictionary.json'; a.click();
-  URL.revokeObjectURL(url);
-  showNotification("JSON exported");
-});
-
-importBtn.addEventListener('click', () => {
-  if(!auth.currentUser) return alert("Login first");
-  const file = importFile.files[0];
-  if(!file) return alert("Select a JSON file");
-  const reader = new FileReader();
-  reader.onload = async e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      for(const word of data){
-        if(word.tausug && word.english){
-          const q = query(wordsCollection, where('tausug','==', word.tausug));
-          const querySnapshot = await getDocs(q);
-          if(!querySnapshot.empty){
-            const docRef = doc(db,"tausugDictionary", querySnapshot.docs[0].id);
-            await updateDoc(docRef, { english: word.english });
-          } else {
-            await addDoc(wordsCollection, { tausug: word.tausug, english: word.english });
+        // Tausug Cell
+        const tausugTd = document.createElement("td");
+        tausugTd.contentEditable = true;
+        tausugTd.innerText = word.tausug;
+        tausugTd.addEventListener("blur", async () => {
+          const newTausug = tausugTd.innerText.trim();
+          if (!newTausug) {
+            tausugTd.innerText = word.tausug;
+            showNotification("Tausug word cannot be empty.", true);
+            return;
           }
+          
+          if (newTausug !== word.tausug) {
+            try {
+              await updateDoc(doc(db, "dictionary", word.id), { 
+                tausug: newTausug.charAt(0).toUpperCase() + newTausug.slice(1).toLowerCase() 
+              });
+              showNotification("Tausug word updated successfully!");
+            } catch (error) {
+              console.error("Error updating word: ", error);
+              tausugTd.innerText = word.tausug;
+              showNotification("Error updating word. Please try again.", true);
+            }
+          }
+        });
+
+        // English Cell
+        const englishTd = document.createElement("td");
+        englishTd.contentEditable = true;
+        englishTd.innerText = word.english;
+        englishTd.addEventListener("blur", async () => {
+          const newEnglish = englishTd.innerText.trim();
+          if (!newEnglish) {
+            englishTd.innerText = word.english;
+            showNotification("English meaning cannot be empty.", true);
+            return;
+          }
+          
+          if (newEnglish !== word.english) {
+            try {
+              await updateDoc(doc(db, "dictionary", word.id), { 
+                english: newEnglish.charAt(0).toUpperCase() + newEnglish.slice(1).toLowerCase() 
+              });
+              showNotification("English meaning updated successfully!");
+            } catch (error) {
+              console.error("Error updating meaning: ", error);
+              englishTd.innerText = word.english;
+              showNotification("Error updating meaning. Please try again.", true);
+            }
+          }
+        });
+
+        // Delete Button
+        const actionTd = document.createElement("td");
+        const delBtn = document.createElement("button");
+        delBtn.classList.add("delete-btn");
+        delBtn.innerText = "Delete";
+        delBtn.addEventListener("click", async () => {
+          if (confirm(`Are you sure you want to delete "${word.tausug}"?`)) {
+            try {
+              await deleteDoc(doc(db, "dictionary", word.id));
+              showNotification(`"${word.tausug}" deleted successfully!`);
+            } catch (error) {
+              console.error("Error deleting word: ", error);
+              showNotification("Error deleting word. Please try again.", true);
+            }
+          }
+        });
+        actionTd.appendChild(delBtn);
+
+        tr.appendChild(tausugTd);
+        tr.appendChild(englishTd);
+        tr.appendChild(actionTd);
+        wordsTable.appendChild(tr);
+      });
+    });
+
+    // Search & Suggestions
+    searchInput.addEventListener("input", () => {
+      const queryText = searchInput.value.toLowerCase().trim();
+      
+      // Hide suggestions if search is empty
+      if (!queryText) {
+        suggestionsDiv.style.display = "none";
+        filterTable(""); // Show all rows
+        return;
+      }
+      
+      // Find matches
+      const matches = allWords.filter(word => 
+        word.tausug.toLowerCase().includes(queryText) || 
+        word.english.toLowerCase().includes(queryText)
+      );
+      
+      // Update suggestions
+      suggestionsDiv.innerHTML = "";
+      if (matches.length > 0) {
+        matches.forEach(word => {
+          const div = document.createElement("div");
+          div.innerHTML = `<strong>${word.tausug}</strong> → ${word.english}`;
+          div.addEventListener("click", () => {
+            searchInput.value = word.tausug;
+            filterTable(word.tausug.toLowerCase());
+            suggestionsDiv.style.display = "none";
+          });
+          suggestionsDiv.appendChild(div);
+        });
+        suggestionsDiv.style.display = "block";
+      } else {
+        suggestionsDiv.style.display = "none";
+      }
+      
+      // Filter table
+      filterTable(queryText);
+    });
+
+    // Filter table based on search query
+    function filterTable(text) {
+      const rows = wordsTable.getElementsByTagName("tr");
+      
+      for (let row of rows) {
+        if (row.cells.length < 2) continue; // Skip if not a data row
+        
+        const tausug = row.cells[0].innerText.toLowerCase();
+        const english = row.cells[1].innerText.toLowerCase();
+        
+        if (tausug.includes(text) || english.includes(text)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
         }
       }
-      showNotification("JSON imported");
-    } catch(err){ alert("Invalid JSON"); }
-  };
-  reader.readAsText(file);
-});
+    }
 
-// Auth
-signupBtn.addEventListener('click', async () => {
-  try { await createUserWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value.trim()); showNotification("Signed up"); } 
-  catch(err){ showNotification(err.message,"red"); }
-});
-loginBtn.addEventListener('click', async () => {
-  try { await signInWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value.trim()); showNotification("Logged in"); } 
-  catch(err){ showNotification(err.message,"red"); }
-});
-logoutBtn.addEventListener('click', async () => { await signOut(auth); });
+    // Hide suggestions when clicking outside
+    document.addEventListener("click", (e) => {
+      if (e.target !== searchInput && e.target !== suggestionsDiv) {
+        suggestionsDiv.style.display = "none";
+      }
+    });
 
-onAuthStateChanged(auth, user => {
-  if(user){
-    addForm.classList.remove('hidden');
-    logoutBtn.classList.remove('hidden');
-    loginBtn.classList.add('hidden');
-    signupBtn.classList.add('hidden');
-    importBtn.classList.remove('hidden');
-    exportBtn.classList.remove('hidden');
-    importFile.classList.remove('hidden');
-    userInfo.textContent = "Logged in as: "+user.email;
-  } else {
-    addForm.classList.add('hidden');
-    logoutBtn.classList.add('hidden');
-    loginBtn.classList.remove('hidden');
-    signupBtn.classList.remove('hidden');
-    importBtn.classList.add('hidden');
-    exportBtn.classList.add('hidden');
-    importFile.classList.add('hidden');
-    userInfo.textContent = "";
-  }
-});
-</script>
+    // Allow Enter key to add words
+    tausugInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        englishInput.focus();
+      }
+    });
+    
+    englishInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        addBtn.click();
+      }
+    });
+  </script>
 </body>
 </html>
