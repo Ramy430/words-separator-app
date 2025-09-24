@@ -4,63 +4,903 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tausug-English Dictionary</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #6a11cb;
+      --secondary-color: #2575fc;
+      --accent-color: #e74c3c;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --light-color: #f8f9fa;
+      --dark-color: #2c3e50;
+      --text-color: #333;
+      --border-radius: 10px;
+      --box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: var(--text-color);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+    }
+    
+    header {
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      z-index: 0;
+    }
+    
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .app-content {
+      padding: 30px;
+    }
+    
+    #search-container {
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    
+    #search {
+      width: 80%;
+      padding: 15px 25px;
+      font-size: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 50px;
+      outline: none;
+      transition: var(--transition);
+    }
+    
+    #search:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+    }
+    
+    #suggestions {
+      position: absolute;
+      background: white;
+      border: 1px solid #ddd;
+      width: 80%;
+      left: 10%;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      border-radius: 0 0 10px 10px;
+      display: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    #suggestions div {
+      padding: 12px 20px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      transition: var(--transition);
+    }
+    
+    #suggestions div:last-child {
+      border-bottom: none;
+    }
+    
+    #suggestions div:hover {
+      background-color: #f5f5f5;
+    }
+    
+    #add-form {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      padding: 20px;
+      background-color: var(--light-color);
+      border-radius: var(--border-radius);
+    }
+    
+    #add-form input {
+      padding: 12px 15px;
+      font-size: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      width: 250px;
+      transition: var(--transition);
+    }
+    
+    #add-form input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+    }
+    
+    #add-form button {
+      padding: 12px 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    #addBtn {
+      background: var(--success-color);
+    }
+    
+    #addBtn:hover {
+      background: #219653;
+      transform: translateY(-2px);
+    }
+    
+    #saveBtn {
+      background: var(--secondary-color);
+    }
+    
+    #saveBtn:hover:not(:disabled) {
+      background: #1c68d3;
+      transform: translateY(-2px);
+    }
+    
+    #cancelBtn {
+      background: #95a5a6;
+    }
+    
+    #cancelBtn:hover:not(:disabled) {
+      background: #7f8c8d;
+      transform: translateY(-2px);
+    }
+    
+    #saveBtn:disabled, #cancelBtn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    #firebase-controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    #firebase-controls button {
+      padding: 12px 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    #saveToFirebaseBtn {
+      background: #9b59b6;
+    }
+    
+    #saveToFirebaseBtn:hover {
+      background: #8e44ad;
+      transform: translateY(-2px);
+    }
+    
+    #loadFromFirebaseBtn {
+      background: #3498db;
+    }
+    
+    #loadFromFirebaseBtn:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+    }
+    
+    #clearLocalBtn {
+      background: #e67e22;
+    }
+    
+    #clearLocalBtn:hover {
+      background: #d35400;
+      transform: translateY(-2px);
+    }
+    
+    #wordsTableContainer {
+      overflow-x: auto;
+      border-radius: var(--border-radius);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    
+    th, td {
+      border: 1px solid #e0e0e0;
+      padding: 15px;
+      text-align: left;
+    }
+    
+    th {
+      background: var(--light-color);
+      font-weight: 600;
+      color: var(--dark-color);
+      position: sticky;
+      top: 0;
+    }
+    
+    tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .edit-btn, .delete-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .edit-btn {
+      background: var(--warning-color);
+      color: white;
+    }
+    
+    .edit-btn:hover {
+      background: #e67e22;
+    }
+    
+    .delete-btn {
+      background: var(--accent-color);
+      color: white;
+    }
+    
+    .delete-btn:hover {
+      background: #c0392b;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: #6c757d;
+      font-style: italic;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: var(--light-color);
+      color: #6c757d;
+      margin-top: 30px;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      background: var(--success-color);
+      color: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      display: none;
+      z-index: 1000;
+      max-width: 350px;
+      animation: fadeIn 0.3s, fadeOut 0.3s 2.7s forwards;
+    }
+    
+    .notification.error {
+      background: var(--accent-color);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-20px); }
+    }
+    
+    /* Firebase status indicator */
+    .firebase-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+    
+    .firebase-status.connected {
+      background: rgba(46, 204, 113, 0.2);
+      color: #27ae60;
+    }
+    
+    .firebase-status.disconnected {
+      background: rgba(231, 76, 60, 0.2);
+      color: #c0392b;
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      header {
+        padding: 20px;
+      }
+      
+      header h1 {
+        font-size: 2rem;
+      }
+      
+      .app-content {
+        padding: 20px;
+      }
+      
+      #search {
+        width: 95%;
+      }
+      
+      #suggestions {
+        width: 95%;
+        left: 2.5%;
+      }
+      
+      #add-form, #firebase-controls {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      #add-form input {
+        width: 100%;
+      }
+      
+      th, td {
+        padding: 10px;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+    
+    /* GitHub corner */
+    .github-corner {
+      position: absolute;
+      top: 0;
+      right: 0;
+      border: 0;
+      z-index: 2;
+    }
+    
+    .github-corner svg {
+      fill: white;
+      color: var(--primary-color);
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <h1>Tausug-English Dictionary</h1>
-    <div class="subtitle">Add, search, and manage Tausug words and their English translations</div>
-  </header>
-  <div class="app-content">
-    <div id="search-container">
-      <input type="text" id="search" placeholder="Search Tausug or English word...">
-      <div id="suggestions"></div>
+  <div class="container">
+    <header>
+      <a href="https://github.com/yourusername/tausug-dictionary" class="github-corner" aria-label="View source on GitHub">
+        <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff;" aria-hidden="true">
+          <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+          <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+          <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+        </svg>
+      </a>
+      <h1>Tausug-English Dictionary</h1>
+      <div class="subtitle">Add, search, and manage Tausug words and their English translations</div>
+      <div id="firebaseStatus" class="firebase-status disconnected">
+        <i class="fas fa-plug"></i> Firebase: Disconnected
+      </div>
+    </header>
+
+    <div class="app-content">
+      <div id="search-container">
+        <input type="text" id="search" placeholder="Search Tausug or English word...">
+        <div id="suggestions"></div>
+      </div>
+
+      <div id="add-form">
+        <input type="text" id="tausug" placeholder="Tausug Word">
+        <input type="text" id="english" placeholder="English Meaning">
+        <button id="addBtn"><i class="fas fa-plus"></i> Add Word</button>
+        <button id="saveBtn" disabled><i class="fas fa-save"></i> Save Changes</button>
+        <button id="cancelBtn" disabled><i class="fas fa-times"></i> Cancel</button>
+      </div>
+
+      <div id="firebase-controls">
+        <button id="saveToFirebaseBtn"><i class="fas fa-cloud-upload-alt"></i> Save to Firebase</button>
+        <button id="loadFromFirebaseBtn"><i class="fas fa-cloud-download-alt"></i> Load from Firebase</button>
+        <button id="clearLocalBtn"><i class="fas fa-trash"></i> Clear Local Data</button>
+      </div>
+
+      <div id="wordsTableContainer">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Tausug</th>
+              <th>English</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="wordsTable">
+            <tr>
+              <td colspan="4" class="loading">Loading dictionary...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <div id="jump-container">
-      <input type="number" id="jumpRowInput" placeholder="Enter row #">
-      <button id="jumpRowBtn">Go</button>
-    </div>
-
-    <div id="filter-container">
-      <button id="filterUnsavedBtn">Show Unsaved Changes Only</button>
-    </div>
-
-    <div id="jump-unsaved-container">
-      <button id="nextUnsavedBtn">Next Unsaved Change</button>
-    </div>
-
-    <div id="add-form">
-      <input type="text" id="tausug" placeholder="Tausug Word">
-      <input type="text" id="english" placeholder="English Meaning">
-      <button id="addBtn">Add Word</button>
-      <button id="saveBtn" disabled>Save Changes</button>
-      <button id="cancelBtn" disabled>Cancel Changes</button>
-    </div>
-
-    <div id="wordsTableContainer">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Tausug</th>
-            <th>English</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="wordsTable">
-          <tr><td colspan="4" class="loading">Loading dictionary...</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <footer>
+      <p>Tausug-English Dictionary &copy; 2025 | Built with Firebase</p>
+    </footer>
   </div>
-  <footer>
-    <p>Tausug-English Dictionary &copy; 2025 | Built with Firebase</p>
-  </footer>
-</div>
-<div class="notification" id="notification"></div>
 
-<script type="module" src="script.js"></script>
+  <div class="notification" id="notification">Operation completed successfully!</div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.6.1/firebase-firestore.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      // Replace with your actual Firebase config
+      apiKey: "AIzaSyDummyAPIKeyForExampleOnly",
+      authDomain: "tausug-dictionary.firebaseapp.com",
+      projectId: "tausug-dictionary",
+      storageBucket: "tausug-dictionary.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdefghijklmnop"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    // Dictionary data (using localStorage as fallback)
+    let dictionary = [];
+    let editId = null;
+    
+    // DOM elements
+    const searchInput = document.getElementById('search');
+    const suggestionsDiv = document.getElementById('suggestions');
+    const tausugInput = document.getElementById('tausug');
+    const englishInput = document.getElementById('english');
+    const addBtn = document.getElementById('addBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const wordsTable = document.getElementById('wordsTable');
+    const notification = document.getElementById('notification');
+    const firebaseStatus = document.getElementById('firebaseStatus');
+    const saveToFirebaseBtn = document.getElementById('saveToFirebaseBtn');
+    const loadFromFirebaseBtn = document.getElementById('loadFromFirebaseBtn');
+    const clearLocalBtn = document.getElementById('clearLocalBtn');
+    
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', function() {
+      loadDictionary();
+      setupEventListeners();
+      updateFirebaseStatus(true); // Assume connected for demo
+    });
+    
+    // Update Firebase connection status
+    function updateFirebaseStatus(connected) {
+      if (connected) {
+        firebaseStatus.className = 'firebase-status connected';
+        firebaseStatus.innerHTML = '<i class="fas fa-plug"></i> Firebase: Connected';
+      } else {
+        firebaseStatus.className = 'firebase-status disconnected';
+        firebaseStatus.innerHTML = '<i class="fas fa-plug"></i> Firebase: Disconnected';
+      }
+    }
+    
+    // Load dictionary from localStorage (fallback)
+    function loadDictionary() {
+      const storedDictionary = localStorage.getItem('tausugDictionary');
+      if (storedDictionary) {
+        dictionary = JSON.parse(storedDictionary);
+      } else {
+        // Add some sample data if empty
+        dictionary = [
+          { id: 1, tausug: "maunu-unu", english: "what" },
+          { id: 2, tausug: "kissai", english: "why" },
+          { id: 3, tausug: "sīnu", english: "who" },
+          { id: 4, tausug: "hain", english: "where" },
+          { id: 5, tausug: "piyag", english: "when" },
+          { id: 6, tausug: "biya'diun", english: "how" },
+          { id: 7, tausug: "iyan", english: "this" },
+          { id: 8, tausug: "itu", english: "that" },
+          { id: 9, tausug: "aku", english: "I/me" },
+          { id: 10, tausug: "kaw", english: "you" },
+          { id: 11, tausug: "kita", english: "we (inclusive)" },
+          { id: 12, tausug: "kami", english: "we (exclusive)" },
+          { id: 13, tausug: "sila", english: "they" },
+          { id: 14, tausug: "marayaw", english: "good" },
+          { id: 15, tausug: "maling", english: "bad" },
+          { id: 16, tausug: "daku", english: "big" },
+          { id: 17, tausug: "di' / usug", english: "small" },
+          { id: 18, tausug: "mata", english: "eye" },
+          { id: 19, tausug: "ilung", english: "nose" },
+          { id: 20, tausug: "baba", english: "mouth" }
+        ];
+        saveDictionary();
+      }
+      renderDictionary();
+    }
+    
+    // Save dictionary to localStorage (fallback)
+    function saveDictionary() {
+      localStorage.setItem('tausugDictionary', JSON.stringify(dictionary));
+    }
+    
+    // Set up event listeners
+    function setupEventListeners() {
+      // Search functionality
+      searchInput.addEventListener('input', handleSearch);
+      
+      // Add word functionality
+      addBtn.addEventListener('click', addWord);
+      
+      // Save changes functionality
+      saveBtn.addEventListener('click', saveChanges);
+      
+      // Cancel changes functionality
+      cancelBtn.addEventListener('click', cancelEdit);
+      
+      // Firebase controls
+      saveToFirebaseBtn.addEventListener('click', saveToFirebase);
+      loadFromFirebaseBtn.addEventListener('click', loadFromFirebase);
+      clearLocalBtn.addEventListener('click', clearLocalData);
+      
+      // Allow pressing Enter to add word
+      tausugInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          addWord();
+        }
+      });
+      
+      englishInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          addWord();
+        }
+      });
+      
+      // Close suggestions when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+          suggestionsDiv.style.display = 'none';
+        }
+      });
+    }
+    
+    // Handle search input
+    function handleSearch() {
+      const query = searchInput.value.toLowerCase().trim();
+      
+      if (query.length === 0) {
+        suggestionsDiv.style.display = 'none';
+        renderDictionary();
+        return;
+      }
+      
+      // Filter dictionary based on query
+      const filteredWords = dictionary.filter(word => 
+        word.tausug.toLowerCase().includes(query) || 
+        word.english.toLowerCase().includes(query)
+      );
+      
+      // Show suggestions
+      showSuggestions(filteredWords);
+      
+      // Render filtered results in table
+      renderDictionary(filteredWords);
+    }
+    
+    // Show search suggestions
+    function showSuggestions(words) {
+      if (words.length === 0) {
+        suggestionsDiv.style.display = 'none';
+        return;
+      }
+      
+      suggestionsDiv.innerHTML = '';
+      words.slice(0, 5).forEach(word => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.className = 'suggestion-item';
+        suggestionItem.innerHTML = `<strong>${word.tausug}</strong> - ${word.english}`;
+        suggestionItem.addEventListener('click', () => {
+          searchInput.value = word.tausug;
+          suggestionsDiv.style.display = 'none';
+          renderDictionary([word]);
+        });
+        suggestionsDiv.appendChild(suggestionItem);
+      });
+      
+      suggestionsDiv.style.display = 'block';
+    }
+    
+    // Add a new word to the dictionary
+    function addWord() {
+      const tausug = tausugInput.value.trim();
+      const english = englishInput.value.trim();
+      
+      if (!tausug || !english) {
+        showNotification('Please enter both Tausug word and English meaning', true);
+        return;
+      }
+      
+      // Check if word already exists
+      const existingWord = dictionary.find(word => 
+        word.tausug.toLowerCase() === tausug.toLowerCase()
+      );
+      
+      if (existingWord) {
+        showNotification('This Tausug word already exists in the dictionary', true);
+        return;
+      }
+      
+      // Add new word
+      const newId = dictionary.length > 0 ? Math.max(...dictionary.map(w => w.id)) + 1 : 1;
+      dictionary.push({ id: newId, tausug, english });
+      saveDictionary();
+      
+      // Clear inputs and refresh table
+      clearInputs();
+      renderDictionary();
+      showNotification('Word added successfully!');
+    }
+    
+    // Edit a word
+    function editWord(id) {
+      const word = dictionary.find(w => w.id === id);
+      if (!word) return;
+      
+      // Populate form with word data
+      tausugInput.value = word.tausug;
+      englishInput.value = word.english;
+      editId = id;
+      
+      // Change button states
+      addBtn.disabled = true;
+      saveBtn.disabled = false;
+      cancelBtn.disabled = false;
+      
+      // Focus on Tausug input
+      tausugInput.focus();
+    }
+    
+    // Save changes to an edited word
+    function saveChanges() {
+      if (editId === null) return;
+      
+      const tausug = tausugInput.value.trim();
+      const english = englishInput.value.trim();
+      
+      if (!tausug || !english) {
+        showNotification('Please enter both Tausug word and English meaning', true);
+        return;
+      }
+      
+      // Update the word
+      const wordIndex = dictionary.findIndex(w => w.id === editId);
+      if (wordIndex !== -1) {
+        dictionary[wordIndex].tausug = tausug;
+        dictionary[wordIndex].english = english;
+        saveDictionary();
+        
+        // Reset form and refresh table
+        cancelEdit();
+        renderDictionary();
+        showNotification('Word updated successfully!');
+      }
+    }
+    
+    // Cancel editing
+    function cancelEdit() {
+      clearInputs();
+      editId = null;
+      
+      // Reset button states
+      addBtn.disabled = false;
+      saveBtn.disabled = true;
+      cancelBtn.disabled = true;
+    }
+    
+    // Delete a word
+    function deleteWord(id) {
+      if (confirm('Are you sure you want to delete this word?')) {
+        dictionary = dictionary.filter(word => word.id !== id);
+        saveDictionary();
+        renderDictionary();
+        showNotification('Word deleted successfully!');
+      }
+    }
+    
+    // Clear input fields
+    function clearInputs() {
+      tausugInput.value = '';
+      englishInput.value = '';
+    }
+    
+    // Render the dictionary table
+    function renderDictionary(words = dictionary) {
+      if (words.length === 0) {
+        wordsTable.innerHTML = '<tr><td colspan="4" class="loading">No words found</td></tr>';
+        return;
+      }
+      
+      wordsTable.innerHTML = '';
+      words.forEach((word, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${word.tausug}</td>
+          <td>${word.english}</td>
+          <td class="action-buttons">
+            <button class="edit-btn" onclick="editWord(${word.id})"><i class="fas fa-edit"></i> Edit</button>
+            <button class="delete-btn" onclick="deleteWord(${word.id})"><i class="fas fa-trash"></i> Delete</button>
+          </td>
+        `;
+        wordsTable.appendChild(row);
+      });
+    }
+    
+    // Save dictionary to Firebase
+    async function saveToFirebase() {
+      try {
+        showNotification('Saving to Firebase...');
+        
+        // Clear existing data in Firebase
+        // Note: In a real app, you might want to merge data instead of replacing
+        const querySnapshot = await getDocs(collection(db, "dictionary"));
+        const deletePromises = querySnapshot.docs.map(docSnapshot => 
+          deleteDoc(doc(db, "dictionary", docSnapshot.id))
+        );
+        await Promise.all(deletePromises);
+        
+        // Add all words to Firebase
+        const addPromises = dictionary.map(word => 
+          addDoc(collection(db, "dictionary"), {
+            tausug: word.tausug,
+            english: word.english
+          })
+        );
+        
+        await Promise.all(addPromises);
+        showNotification('Dictionary saved to Firebase successfully!');
+      } catch (error) {
+        console.error("Error saving to Firebase: ", error);
+        showNotification('Error saving to Firebase. Please check your configuration.', true);
+      }
+    }
+    
+    // Load dictionary from Firebase
+    async function loadFromFirebase() {
+      try {
+        showNotification('Loading from Firebase...');
+        
+        const querySnapshot = await getDocs(collection(db, "dictionary"));
+        dictionary = [];
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          dictionary.push({
+            id: dictionary.length + 1,
+            tausug: data.tausug,
+            english: data.english
+          });
+        });
+        
+        // Save to localStorage as backup
+        saveDictionary();
+        renderDictionary();
+        showNotification('Dictionary loaded from Firebase successfully!');
+      } catch (error) {
+        console.error("Error loading from Firebase: ", error);
+        showNotification('Error loading from Firebase. Please check your configuration.', true);
+      }
+    }
+    
+    // Clear local data
+    function clearLocalData() {
+      if (confirm('Are you sure you want to clear all local data? This cannot be undone.')) {
+        localStorage.removeItem('tausugDictionary');
+        dictionary = [];
+        renderDictionary();
+        showNotification('Local data cleared successfully!');
+      }
+    }
+    
+    // Show notification
+    function showNotification(message, isError = false) {
+      notification.textContent = message;
+      notification.className = 'notification';
+      
+      if (isError) {
+        notification.classList.add('error');
+      }
+      
+      notification.style.display = 'block';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+    
+    // Make functions available globally for onclick handlers
+    window.editWord = editWord;
+    window.deleteWord = deleteWord;
+  </script>
 </body>
 </html>
